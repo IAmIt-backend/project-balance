@@ -7,10 +7,9 @@ using System.Threading.Tasks;
 
 namespace Entities
 {
-    public class Group
+    public class Payment
     {
-        public ObjectId Id { get; set; }
-        public string Name { get; set; }
-        public ICollection<Payment> Payments { get; set; }
+        public ObjectId userId { get; set; }
+        public double Value { get; set; }
     }
 }
