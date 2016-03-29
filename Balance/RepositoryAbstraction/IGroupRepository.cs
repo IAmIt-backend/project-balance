@@ -1,4 +1,6 @@
 ﻿using Balance.Models;
+using Entities;
+using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +11,9 @@ namespace RepositoryAbstraction
 {
     public interface IGroupRepository
     {
-        Task<bool> AddGroup(GroupModel groupModel);
-        Task<bool> AddUserToGroup(string userEmail, string GroupName, string GroupDescription);
-        Task<GroupModel> GetGroup(string GroupName, string GroupDescription);
-        Task<ICollection<GroupModel>> GetAllGroups();
+        Task AddGroup(Group group);
+        Task AddUserToGroup(ObjectId userId, ObjectId groupId);
+        Task<Group> GetGroup(ObjectId id);
+        Task<ICollection<Group>> GetAllGroups();
     }
 }
