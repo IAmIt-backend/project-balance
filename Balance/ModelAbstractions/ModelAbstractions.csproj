@@ -31,15 +31,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="MongoDB.Bson, Version=2.2.3.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MongoDB.Bson.2.2.3\lib\net45\MongoDB.Bson.dll</HintPath>
+      <HintPath>..\..\Documents\Visual Studio 2015\Projects\project-balance\Balance\packages\MongoDB.Bson.2.2.3\lib\net45\MongoDB.Bson.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MongoDB.Driver, Version=2.2.3.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MongoDB.Driver.2.2.3\lib\net45\MongoDB.Driver.dll</HintPath>
+      <HintPath>..\..\Documents\Visual Studio 2015\Projects\project-balance\Balance\packages\MongoDB.Driver.2.2.3\lib\net45\MongoDB.Driver.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="MongoDB.Driver.Core, Version=2.2.3.3, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MongoDB.Driver.Core.2.2.3\lib\net45\MongoDB.Driver.Core.dll</HintPath>
+      <HintPath>..\..\Documents\Visual Studio 2015\Projects\project-balance\Balance\packages\MongoDB.Driver.Core.2.2.3\lib\net45\MongoDB.Driver.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -57,12 +57,25 @@
     <Compile Include="Service.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Balance\Balance.csproj">
-      <Project>{a934ca13-a36b-4fe0-9a09-04b8149099c8}</Project>
-      <Name>Balance</Name>
+    <ProjectReference Include="..\..\Documents\Visual Studio 2015\Projects\project-balance\Balance\Entities\Entities.csproj">
+      <Project>{49c11c4f-ce86-4c0f-bc7b-b68d690cda25}</Project>
+      <Name>Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Documents\Visual Studio 2015\Projects\project-balance\Balance\MongoDB\MongoDB.csproj">
+      <Project>{b5a5959a-1997-45c3-9376-11e11f74ab5b}</Project>
+      <Name>MongoDB</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Documents\Visual Studio 2015\Projects\project-balance\Balance\MVCModels\MVCModels.csproj">
+      <Project>{d0d4c17e-e94a-4639-a7e7-9bee51c68f0c}</Project>
+      <Name>MVCModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Documents\Visual Studio 2015\Projects\project-balance\Balance\RepositoryAbstraction\RepositoryAbstraction.csproj">
+      <Project>{5ebeec06-8808-4b0e-bb39-fb39d9944f81}</Project>
+      <Name>RepositoryAbstraction</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
