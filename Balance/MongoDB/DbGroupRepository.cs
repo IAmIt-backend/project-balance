@@ -24,34 +24,36 @@ namespace MongoDB
         }
         public async Task AddGroup(Group group)
         {
-            await Task.Run(() => { _groups.InsertOne(group); });
+            await _groups.InsertOneAsync(group); 
         }
 
         public async Task AddUserToGroup(Role memberType, ObjectId userId, ObjectId groupId)
         {
-            await Task.Run(() => {
-                _memberships.InsertOne(new UserGroupMembership {
+            await _memberships.InsertOneAsync(new UserGroupMembership {
                     MemberType = memberType,
                     UserId = userId,
                     GroupId = groupId
                 });
-            });
+            
         }
 
         public async Task<ICollection<Group>> GetAllGroups()
-        {
-            return await Task.Run(() =>
-            {
-                var list = _groups.AsQueryable().ToList();
-                return list;
-            }
-            );
+        {   
+           return await _groups.AsQueryable().ToListAsync(); 
         }
 
         public async Task<Group> GetGroup(ObjectId id)
         {
             return await _groups.Find(g => g.Id == id).FirstOrDefaultAsync();
 
+        }
+
+        public async Task<bool> IsUserInGroup(ObjectId userId, ObjectId groupId)
+        {
+                if ((await _memberships.Find(m => m.GroupId == groupId && m.UserId == userId).FirstAsync()) == null)
+                    return false;
+                else
+                    return true;
         }
     }
 }

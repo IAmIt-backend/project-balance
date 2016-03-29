@@ -9,7 +9,7 @@ namespace Entities
 {
     public class Payment
     {
-        public ObjectId userId { get; set; }
+        public ObjectId UserId { get; set; }
         public double Value { get; set; }
     }
 }
