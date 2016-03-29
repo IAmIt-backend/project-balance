@@ -12,6 +12,7 @@ namespace Balance
     {
         protected void Application_Start()
         {
+            EnsureAuthIndexes.Exist();
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
