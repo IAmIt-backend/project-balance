@@ -12,10 +12,10 @@ namespace ModelAbstractions
     public interface IService
     {
         Task<User> GetUser(string email);
-        Task AddPayment(ObjectId groupId, double value, string email);
+        Task AddPayment(ObjectId groupId, double value, ObjectId userId);
         Task AddGroup(AddGroupModel groupModel);
         Task AddUserToGroup(ObjectId userId, ObjectId groupId);
-        Task<IDictionary<ObjectId, string>> GetAllGroups();
-        Task<Group> GetGroup(ObjectId id);
+        Task<GroupListItemModel> GetAllGroups();
+        Task<AddGroupModel> GetGroup(ObjectId id);
     }
 }

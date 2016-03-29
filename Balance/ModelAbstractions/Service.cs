@@ -15,7 +15,7 @@ namespace ModelAbstractions
 
 
         private IGroupRepository _groups;
-        private IUserRepository _users;
+       // private IUserRepository _users;
 
 
         public async Task AddGroup(AddGroupModel groupModel)
@@ -55,32 +55,28 @@ namespace ModelAbstractions
 
 
 
-        public async Task<IDictionary<ObjectId, string>> GetAllGroups()
+        public async Task<GroupListItemModel> GetAllGroups()
         {
             var groups = await _groups.GetAllGroups();
-            if (groups.Count.Equals(0))
-            {
-                throw new Exception("Ни одной группы не существует");
-            }
-            return groups.ToDictionary<ObjectId, string>(g => g.Id);
+            return groups.Select(g => new GroupListItemModel {Id = g.Id, Name = g.Name}).ToList;
 
         }
 
 
 
-        public async Task<Group> GetGroup(ObjectId id)
+        public async Task<AddGroupModel> GetGroup(ObjectId id)
         {
             var groups = await _groups.GetAllGroups();
             if (!groups.ToDictionary<ObjectId, string>(g => g.Id).Contains<ObjectId>(id))
             {
                 throw new Exception("Такой группы не существует");
             }
-            return await groups.Where(g => g.Id == id).FirstAsync;
+            return groups.Select(g => new AddGroupModel {Name = g.Name, Description = g.Description}).First;
         }
 
 
 
-        public async Task<User> GetUser(string email)
+        /*public async Task<User> GetUser(string email)
         {
             var users = await _users.GetAllUsers();
             if (email == null)
@@ -90,11 +86,11 @@ namespace ModelAbstractions
             return user;
 
 
-        }
+        }*/
 
 
 
-        public async Task AddPayment(ObjectId groupId, double value, string email)
+        public async Task AddPayment(ObjectId groupId, Decimal value, ObjectId userId)
         {
             var groups = await _groups.GetAllGroups();
             var users = await _users.GetAllUsers();
@@ -106,11 +102,11 @@ namespace ModelAbstractions
             {
                 throw new Exception("Нельзя внести отрицательную или нулевую сумму");
             }
-            else if (!users.Contains<string>(email))
+           /* else if (!users.Contains<string>(email))
             {
                 throw new Exception("Такого пользователя не существует");
-            }
-            await _groups.AddPayment(groupId, value, GetUser(email).Id);
+            }*/
+            await _groups.AddPayment(groupId, value, userId);
         }
     }
 }
