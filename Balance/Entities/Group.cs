@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +9,9 @@ namespace Entities
 {
     public class Group
     {
-        public Guid Id { get; set; }
+        public ObjectId Id { get; set; }
         public string Name { get; set; }
-        //public ICollection<int> UserIds { get; set; }
-        public ICollection<Credit> Credits { get; set; }
+        public string Description { get; set; }
+        public ICollection<Payment> Payments { get; set; }
     }
 }
