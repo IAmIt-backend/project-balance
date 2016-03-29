@@ -10,6 +10,6 @@ namespace Entities
     public class Payment
     {
         public ObjectId UserId { get; set; }
-        public double Value { get; set; }
+        public decimal Value { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace MongoDB
 
         public async Task AddPayment(ObjectId groupId, Payment payment)
         {
-            var payments = _groups.Find(g => g.Id == groupId).FirstOrDefault().Payments;
+            var payments = _groups.Find(g => g.Id == groupId).First().Payments;
             payments.Add(payment);
             var update = new ObjectUpdateDefinition<Group>(new object());
             await _groups.UpdateOneAsync(g => g.Id == groupId, update.Set(g => g.Payments, payments));
