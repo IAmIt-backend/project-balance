@@ -1,0 +1,16 @@
+﻿@model Balance.ViewModels.GroupViewModel
+@{
+    ViewBag.Title = "Group";
+}
+<p><label>@Model.Name</label>
+</p>
+<p><label>@Model.Description</label>
+</p>
+<p><label>@Model.Sum</label>
+</p>
+<p>
+    @Html.ActionLink("Add Payment", "Payment", new {Id = @Model.Id})
+</p>
+
+
+

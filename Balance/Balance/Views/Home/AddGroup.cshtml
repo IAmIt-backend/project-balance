@@ -1,0 +1,31 @@
+﻿@model Balance.ViewModels.AddGroupViewModel
+@{
+    ViewBag.Title = "Create";
+}
+
+<form action="" method="post">
+    <p>
+        <label>Name</label>
+        <input type="text" name="name">
+    </p>
+
+    <p>
+        <label>Description</label>
+        <input type="text" name="description">
+    </p>
+
+    <p>
+        <label>Email</label>
+        <input type="text" name="email">
+    </p>
+    <p>
+        <input type="submit" value="Add"/>
+    </p>
+</form>
+
+<p>
+    @Html.ActionLink("Add", "Index")
+</p>
+
+
+
