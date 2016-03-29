@@ -61,6 +61,14 @@
       <Project>{a934ca13-a36b-4fe0-9a09-04b8149099c8}</Project>
       <Name>Balance</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Entities\Entities.csproj">
+      <Project>{49c11c4f-ce86-4c0f-bc7b-b68d690cda25}</Project>
+      <Name>Entities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RepositoryAbstraction\RepositoryAbstraction.csproj">
+      <Project>{5ebeec06-8808-4b0e-bb39-fb39d9944f81}</Project>
+      <Name>RepositoryAbstraction</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

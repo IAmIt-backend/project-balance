@@ -5,7 +5,7 @@ using System.Web;
 
 namespace Balance.Models
 {
-    public class GroupModel
+    public class AddGroupModel
     {
         public string Name { get; set; }
         //public ICollection<int> UserIds { get; set; }
