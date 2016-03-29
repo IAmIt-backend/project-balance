@@ -58,10 +58,7 @@ namespace MongoDB
 
         public async Task<bool> IsUserInGroup(ObjectId userId, ObjectId groupId)
         {
-                if ((await _memberships.Find(m => m.GroupId == groupId && m.UserId == userId).FirstAsync()) == null)
-                    return false;
-                else
-                    return true;
+            return await _memberships.Find(m => m.GroupId == groupId && m.UserId == userId).AnyAsync();
         }
     }
 }
