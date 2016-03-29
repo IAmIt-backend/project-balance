@@ -1,4 +1,6 @@
-﻿using MongoDB.Bson;
+﻿using Balance.Models;
+using Entities;
+using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +11,11 @@ namespace ModelAbstractions
 {
     public interface IService
     {
-       void AddGroup(ObjectId groupId);
-       void AddUserToGroup(ObjectId userId, ObjectId groupId);
-       void GetAllGroups();
+        Task<User> GetUser(string email);
+        Task AddPayment(ObjectId groupId, double value, string email);
+        Task AddGroup(AddGroupModel groupModel);
+        Task AddUserToGroup(ObjectId userId, ObjectId groupId);
+        Task<IDictionary<ObjectId, string>> GetAllGroups();
+        Task<Group> GetGroup(ObjectId id);
     }
 }
