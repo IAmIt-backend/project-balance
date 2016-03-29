@@ -27,6 +27,14 @@ namespace MongoDB
             await _groups.InsertOneAsync(group); 
         }
 
+        public async Task AddPayment(ObjectId groupId, Payment payment)
+        {
+            var payments = _groups.Find(g => g.Id == groupId).FirstOrDefault().Payments;
+            payments.Add(payment);
+            var update = new ObjectUpdateDefinition<Group>(new object());
+            await _groups.UpdateOneAsync(g => g.Id == groupId, update.Set(g => g.Payments, payments));
+        }
+
         public async Task AddUserToGroup(Role memberType, ObjectId userId, ObjectId groupId)
         {
             await _memberships.InsertOneAsync(new UserGroupMembership {
