@@ -2,20 +2,10 @@
 @{
     ViewBag.Title = "Balance";
 }
+<button onclick="window.location.href='/AddGroup'">Add Group</button>
 
-
-<!DOCTYPE html>
-<html>
-<body style="background-color: beige; font-family: Verdana, Arial;">
-    <form action="" method="post">
-        <p>
-            <label for="text1">Enter string:</label><br>
-            <input type="text" name="text">
-        </p>
-        <p><input type="submit" value=" Reverse "></p>
-    </form>
-    <p>@Model.text</p>
-</body>
-</html>
-
+@for (var i = Model.Groups.Count()-1; i >= 0; i--)
+{
+    <p>@Html.ActionLink(Model.Groups.ElementAt(i).Value, "Group" , new { Id = i })</p>
+}
 

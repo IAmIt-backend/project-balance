@@ -1,0 +1,22 @@
+﻿@model Balance.ViewModels.PaymentViewModel
+@{
+    ViewBag.Title = "Payment";
+}
+<form action="" method="post">
+    <p>
+        <label>Value</label>
+        <input type="number" name="value">
+    </p>
+
+    <p>
+        <label>Email</label>
+        <input type="text" name="email">
+    </p>
+    <p>@using (Html.BeginForm("HomeController", "Index", FormMethod.Get))
+    {
+        <input type="submit" value="Add" />
+    }</p>
+</form>
+
+
+

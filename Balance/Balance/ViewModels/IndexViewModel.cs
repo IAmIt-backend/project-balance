@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using MongoDB.Bson;
 
 namespace Balance.ViewModels
 {
     public class IndexViewModel
     {
-        public string text { get; set;  }
+        public Dictionary<ObjectId, string> Groups { get; set; }
     }
 }
