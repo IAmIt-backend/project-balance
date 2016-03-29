@@ -5,19 +5,21 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.WebPages.Instrumentation;
-using Balance.Models;
 using MongoDB.Bson;
 using System.Web.Services.Description;
+using MVCModels.Models;
+using ModelAbstractions;
+using System.Threading.Tasks;
 
 namespace Balance.Controllers
 {
     public class HomeController : Controller
     {
-        private Service _godService = new Service();
+        private ModelAbstractions.Service _godService = new ModelAbstractions.Service();
         [HttpGet]
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View(new IndexViewModel { Groups = _godService.GetAllGroups() });
+            return View(new IndexViewModel { Groups = await _godService.GetAllGroups() });
         }
 
         [HttpGet]
@@ -27,20 +29,23 @@ namespace Balance.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddGroup(AddGroupModel model)
+        public async Task<ActionResult> AddGroup(AddGroupModel model)
         {
-            _godService.AddGroup(model);
+            await _godService.AddGroup(model);
             return View();
         }
 
         [HttpGet]
-        public ActionResult Group(ObjectId id)
+        public async Task<ActionResult> Group(string groupId)
         {
-            var group = _godService.GetGroup(id);
-            return View(new GroupViewModel {Id = id, Name = group.Name(),
-                Description = group.Description(),
-                Sum = group.Payments.Select(p => p.Value).Sum()
-        });
+            var id = new ObjectId(groupId);
+            var group = await _godService.GetGroup(id);
+            return View(new GroupViewModel
+            {
+                Id = id,
+                Name = group.Name,
+                Description = group.Description
+            });
         }
 
 
@@ -51,9 +56,9 @@ namespace Balance.Controllers
         }
 
         [HttpPost]
-        public ActionResult Payment(ObjectId id ,PaymentModel model)
+        public async Task<ActionResult> Payment(ObjectId id, PaymentModel model)
         {
-            _godService.AddPayment(id, model.Value, model.Email);
+            await _godService.AddPayment(id, model.Value, new ObjectId(model.UserId));
             return View();
         }
     }

@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using MongoDB.Bson;
 
-namespace Balance.ViewModels
+namespace MVCModels.Models
 {
-    public class GroupViewModel
+    public class AddGroupModel
     {
-        public ObjectId Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        //public decimal Sum { get; set; }
+        public string Email { get; set; }
     }
 }
