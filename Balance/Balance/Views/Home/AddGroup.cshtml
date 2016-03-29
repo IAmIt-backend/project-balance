@@ -18,11 +18,14 @@
         <label>Email</label>
         <input type="text" name="email">
     </p>
-    <p>@using (Html.BeginForm("HomeController", "Index", FormMethod.Get))
-    {
-        <input type="submit" value="Add" />
-    }</p>
+    <p>
+        <input type="submit" value="Add"/>
+    </p>
 </form>
+
+<p>
+    @Html.ActionLink("Add", "Index")
+</p>
 
 
 

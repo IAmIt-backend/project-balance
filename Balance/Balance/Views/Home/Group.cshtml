@@ -8,7 +8,9 @@
 </p>
 <p><label>@Model.Sum</label>
 </p>
-<button onclick="window.location.href='/Payment/@Model.Id'">AddPayment</button>
+<p>
+    @Html.ActionLink("Add Payment", "Payment", new {Id = @Model.Id})
+</p>
 
 
 

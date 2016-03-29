@@ -7,16 +7,17 @@ using System.Web.Mvc;
 using System.Web.WebPages.Instrumentation;
 using Balance.Models;
 using MongoDB.Bson;
+using System.Web.Services.Description;
 
 namespace Balance.Controllers
 {
     public class HomeController : Controller
     {
-        private IService _service = new IService();
+        private Service _godService = new Service();
         [HttpGet]
         public ActionResult Index()
         {
-            return View(new IndexViewModel { Groups = _service.GetAllGroups() });
+            return View(new IndexViewModel { Groups = _godService.GetAllGroups() });
         }
 
         [HttpGet]
@@ -28,14 +29,14 @@ namespace Balance.Controllers
         [HttpPost]
         public ActionResult AddGroup(AddGroupModel model)
         {
-            _service.AddGroup(model);
+            _godService.AddGroup(model);
             return View();
         }
 
         [HttpGet]
         public ActionResult Group(ObjectId id)
         {
-            var group = _service.GetGroup(id);
+            var group = _godService.GetGroup(id);
             return View(new GroupViewModel {Id = id, Name = group.Name(),
                 Description = group.Description(),
                 Sum = group.Payments.Select(p => p.Value).Sum()
@@ -52,7 +53,7 @@ namespace Balance.Controllers
         [HttpPost]
         public ActionResult Payment(ObjectId id ,PaymentModel model)
         {
-            _service.AddPayment(id, model.Value, model.Email);
+            _godService.AddPayment(id, model.Value, model.Email);
             return View();
         }
     }
