@@ -6,11 +6,16 @@
 </p>
 <p><label>@Model.Description</label>
 </p>
-<p><label>@Model.Sum</label>
+<p>
+    @Html.ActionLink("Add Payment", "Payment", new {Id = @Model.Id.ToString()})
 </p>
 <p>
-    @Html.ActionLink("Add Payment", "Payment", new {Id = @Model.Id})
+    <label>@Model.Sum</label>
 </p>
 
+@foreach (var payment in Model.Payments)
+{
+    <p><label>@payment.Value</label></p>
+}
 
 

@@ -50,6 +50,11 @@ namespace MongoDB
            return await _groups.AsQueryable().ToListAsync(); 
         }
 
+        public async Task<ICollection<Payment>> GetAllPayments(ObjectId groupId)
+        {
+            return (await _groups.Find(g => g.Id == groupId).FirstOrDefaultAsync()).Payments;
+        }
+
         public async Task<Group> GetGroup(ObjectId id)
         {
             return await _groups.Find(g => g.Id == id).FirstOrDefaultAsync();

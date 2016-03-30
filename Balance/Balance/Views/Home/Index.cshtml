@@ -7,5 +7,5 @@
 </p>
 
 @foreach(var group in Model.Groups){
-<p>@Html.ActionLink(group.Value, "Group", new { Id = group.Key })</p>
+<p>@Html.ActionLink(group.Name, "Group", new { Id = group.Id.ToString() })</p>
 }
