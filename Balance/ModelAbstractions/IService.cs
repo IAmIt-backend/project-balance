@@ -19,5 +19,5 @@ namespace ModelAbstractions
         Task<ICollection<UserListItemModel>> GetAllUsersInGroup(ObjectId groupId);
         Task<AddGroupModel> GetGroup(ObjectId id);
         Task<ICollection<GroupListItemModel>> GetAllGroupsOfUser(ObjectId userId);
+        Task<bool> IsUserAdministrator(ObjectId userId, ObjectId groupId);
     }
-}

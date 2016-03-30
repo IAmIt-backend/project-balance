@@ -56,12 +56,13 @@ namespace ModelAbstractions
 
 
 
- 
 
 
 
 
-        public async Task<AddGroupModel> GetGroup(ObjectId id) { 
+
+        public async Task<AddGroupModel> GetGroup(ObjectId id)
+        {
             var group = await _groups.GetGroup(id);
             if (group == null)
             {
@@ -70,10 +71,10 @@ namespace ModelAbstractions
 
             return new AddGroupModel { Name = group.Name, Description = group.Description };
         }
-                 
 
 
-                
+
+
         /*public async Task<User> GetUser(string email)
         {
             var users = await _users.GetAllUsers();
@@ -123,7 +124,7 @@ namespace ModelAbstractions
         public async Task<ICollection<UserListItemModel>> GetAllUsersInGroup(ObjectId groupId)
         {
             var users = await _groups.GetAllUsersInGroup(groupId);
-            return users.Select(u => new UserListItemModel { Id = u}).ToList();
+            return users.Select(u => new UserListItemModel { Id = u }).ToList();
         }
 
 
@@ -131,6 +132,13 @@ namespace ModelAbstractions
         {
             var groups = await _users.GetAllGroupsOfUser(userId);
             return groups.Select(g => new GroupListItemModel { Id = g.Id, Name = g.Name }).ToList();
+        }
+
+
+        public async Task<bool> IsUserAdministrator(ObjectId userId, ObjectId groupId)
+        {
+            var role = await _users.IsUserAdministrator(userId, groupId);
+            return role;
         }
     }
 }
