@@ -15,6 +15,7 @@ namespace Entities
 
     public class UserGroupMembership
     {
+        public ObjectId Id { get; set; }
         public ObjectId GroupId { get; set; }
         public ObjectId UserId { get; set; }
         public  Role MemberType { get; set; }

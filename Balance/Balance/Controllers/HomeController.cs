@@ -34,11 +34,11 @@ namespace Balance.Controllers
         [HttpPost]
         public ActionResult AddGroup(AddGroupModel model)
         {
-            if (string.IsNullOrEmpty(model.Name) || model.Description == null || model.Email == null)
+            if (string.IsNullOrEmpty(model.Name) || model.Description == null)
             {
                 ModelState.AddModelError("", "Fill all fields");
                 return
-                    View(new AddGroupViewModel {Description = model.Description, Name = model.Name, Email = model.Email});
+                    View(new AddGroupViewModel {Description = model.Description, Name = model.Name});
             }
             else
             {
@@ -52,9 +52,18 @@ namespace Balance.Controllers
         {
             var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
             var group = await _godService.GetGroup(id);
-            var payments = await _godService.GetAllPayments(id);
+            var falsePayments = await _godService.GetAllPayments(id);
             var users = await _godService.GetAllUsersInGroup(id);
-            
+            var payments =
+                falsePayments.Select(
+                    l =>
+                        new PaymentListItemModel
+                        {
+                            Id = l.Id,
+                            Value = l.Value,
+                            UserName = manager.FindById(l.Id.ToString()).UserName
+                        }).ToList();
+
             return View(new GroupViewModel {Id = id, Name = group.Name,
                 Description = group.Description,
                 Payments = payments,
@@ -81,7 +90,8 @@ namespace Balance.Controllers
             }
             else
             {
-                _godService.AddPayment(id, model.Value, new ObjectId(User.Identity.GetUserId()));
+                var userId = new ObjectId(User.Identity.GetUserId());
+                _godService.AddPayment(id, model.Value, userId);
                 return RedirectToAction("Group", id);
             }
         }

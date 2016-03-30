@@ -33,8 +33,8 @@ namespace ModelAbstractions
                 Description = groupModel.Description,
                 Payments = new List<Payment>()
             };
-            await _groups.AddGroup(group);
-            await _groups.AddUserToGroup(Role.Administrator, userId, id);
+             _groups.AddGroup(group);
+             _groups.AddUserToGroup(Role.Administrator, userId, group.Id);
 
 
         }
