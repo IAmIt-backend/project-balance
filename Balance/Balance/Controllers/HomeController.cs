@@ -32,7 +32,7 @@ namespace Balance.Controllers
         public async Task<ActionResult> AddGroup(AddGroupModel model)
         {
             await _godService.AddGroup(model);
-            return View();
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -40,11 +40,14 @@ namespace Balance.Controllers
         {
             var groupId = new ObjectId(id);
             var group = await _godService.GetGroup(groupId);
+            var payments = await _godService.GetAllPayments(groupId);
             return View(new GroupViewModel
             {
                 Id = groupId,
                 Name = group.Name,
-                Description = group.Description
+                Description = group.Description,
+                Payments = payments,
+                Sum = payments.Select(p => p.Value).Sum()
             });
         }
 
@@ -60,7 +63,7 @@ namespace Balance.Controllers
         {
             var groupId = new ObjectId(id); 
             await _godService.AddPayment(groupId, model.Value, new ObjectId());
-            return View();
+            return RedirectToAction("Group", new {Id = id});
         }
     }
 }

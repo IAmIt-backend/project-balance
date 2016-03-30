@@ -9,6 +9,13 @@
 <p>
     @Html.ActionLink("Add Payment", "Payment", new {Id = @Model.Id.ToString()})
 </p>
+<p>
+    <label>@Model.Sum</label>
+</p>
 
+@foreach (var payment in Model.Payments)
+{
+    <p><label>@payment.Value</label></p>
+}
 
 
