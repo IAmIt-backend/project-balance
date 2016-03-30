@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RepositoryAbstraction
 {
-    interface IUserRepository
+    public interface IUserRepository
     {
         Task<ICollection<ObjectId>> GetAllGroupsOfUser(ObjectId userId);
     }

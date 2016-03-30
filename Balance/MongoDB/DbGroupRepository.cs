@@ -51,9 +51,9 @@ namespace MongoDB
             return (await _groups.Find(g => g.Id == groupId).FirstOrDefaultAsync()).Payments;
         }
 
-        public Task<ICollection<ObjectId>> GetAllUsersInGroup(ObjectId groupId)
+        public async Task<ICollection<ObjectId>> GetAllUsersInGroup(ObjectId groupId)
         {
-            throw new NotImplementedException();
+            return  (await _memberships.FindAsync(m => m.GroupId == groupId)).ToList().Select(m => m.UserId).ToList();
         }
 
         public async Task<Group> GetGroup(ObjectId id)
