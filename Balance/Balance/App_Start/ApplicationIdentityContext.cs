@@ -29,11 +29,6 @@ namespace Balance
 
 		public IMongoCollection<ApplicationUser> Users { get; set; }
 
-		public Task<List<IdentityRole>> AllRolesAsync()
-		{
-			return Roles.Find(r => true).ToListAsync();
-		}
-
 		public void Dispose()
 		{
 		}
