@@ -92,7 +92,7 @@ namespace Balance.Controllers
             {
                 var userId = new ObjectId(User.Identity.GetUserId());
                 _godService.AddPayment(id, model.Value, userId);
-                return RedirectToAction("Group", id);
+                return RedirectToAction("Group/" + id, "Home");
             }
         }
 
@@ -118,7 +118,7 @@ namespace Balance.Controllers
                             .GetUserManager<ApplicationUserManager>()
                             .FindByEmail(model.Email)
                             .Id), new ObjectId(id));
-                return RedirectToAction("Group", id);
+                return RedirectToAction("Group/"+id, "Home");
             }
         }
         [HttpGet]
