@@ -41,7 +41,7 @@ namespace ModelAbstractions
 
 
 
-        public async Task AddUserToGroup(Role memberType, ObjectId userId, ObjectId groupId)
+        public async Task AddUserToGroup(ObjectId userId, ObjectId groupId)
         {
             if (await _users.IsUserInGroup(userId, groupId) == true)
             {

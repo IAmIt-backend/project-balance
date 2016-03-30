@@ -10,6 +10,7 @@ using Balance.Models;
 using MongoDB.Bson;
 using System.Web.Services.Description;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 using MVCModels.Models;
 
 namespace Balance.Controllers
@@ -21,8 +22,7 @@ namespace Balance.Controllers
         [HttpGet]
         public async Task<ActionResult> Index()
         {
-            User.Identity.GetUserId();
-            return View(new IndexViewModel { Groups = await _godService.GetAllGroups() });
+            return View(new IndexViewModel { Groups = await _godService.GetAllGroupsOfUser(new ObjectId(User.Identity.GetUserId())) });
         }
 
         [HttpGet]
@@ -34,19 +34,33 @@ namespace Balance.Controllers
         [HttpPost]
         public ActionResult AddGroup(AddGroupModel model)
         {
-            _godService.AddGroup(model);
-            return RedirectToAction("Index");
+            if (string.IsNullOrEmpty(model.Name) || model.Description == null || model.Email == null)
+            {
+                ModelState.AddModelError("", "Fill all fields");
+                return
+                    View(new AddGroupViewModel {Description = model.Description, Name = model.Name, Email = model.Email});
+            }
+            else
+            {
+                _godService.AddGroup(model, new ObjectId(User.Identity.GetUserId()));
+                return RedirectToAction("Index");
+            }
         }
 
         [HttpGet]
         public async Task<ActionResult> Group(ObjectId id)
         {
+            var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
             var group = await _godService.GetGroup(id);
             var payments = await _godService.GetAllPayments(id);
+            var users = await _godService.GetAllUsersInGroup(id);
+            
             return View(new GroupViewModel {Id = id, Name = group.Name,
                 Description = group.Description,
                 Payments = payments,
-                Sum = payments.Select(p => p.Value).Sum()
+                Sum = payments.Select(p => p.Value).Sum(),
+                Users = users.Select(
+                l => new UserListItemModel { Id = l.Id, Name = manager.FindById(l.Id.ToString()).UserName }).ToList()
         });
         }
 
@@ -60,8 +74,41 @@ namespace Balance.Controllers
         [HttpPost]
         public ActionResult Payment(ObjectId id ,PaymentModel model)
         {
-            _godService.AddPayment(id, model.Value, model.UserId);
-            return RedirectToAction("Group", id);
+            if (model.Value == default(decimal) || model.Value < 0)
+            {
+                ModelState.AddModelError("", "Invalid value");
+                return View(new PaymentViewModel {});
+            }
+            else
+            {
+                _godService.AddPayment(id, model.Value, new ObjectId(User.Identity.GetUserId()));
+                return RedirectToAction("Group", id);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult AddUserToGroup(string id, AddUserToGroupModel model)
+        {
+            if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(User.Identity.GetUserName()))
+            {
+                ModelState.AddModelError("", "Invalid email");
+                return View(new AddUserToGroupViewModel {Email = model.Email});
+            }
+            else if (!_godService.IsUserAdministrator())
+            {
+                ModelState.AddModelError("", "You are not administrator");
+                return View(new AddUserToGroupViewModel { Email = model.Email });
+            }
+            else
+            {
+                _godService.AddUserToGroup(
+                    new ObjectId(
+                        HttpContext.GetOwinContext()
+                            .GetUserManager<ApplicationUserManager>()
+                            .FindByEmail(model.Email)
+                            .Id), new ObjectId(id));
+                return RedirectToAction("Group", id);
+            }
         }
     }
 }

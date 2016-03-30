@@ -7,5 +7,6 @@ namespace Balance.ViewModels
 {
     public class PaymentViewModel
     {
+        public decimal Value { get; set; }
     }
 }

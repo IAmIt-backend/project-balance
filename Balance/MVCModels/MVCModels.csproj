@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\AddGroupModel.cs" />
+    <Compile Include="Models\AddUserToGroupModel.cs" />
     <Compile Include="Models\GroupListItemModel.cs" />
     <Compile Include="Models\GroupModel.cs" />
     <Compile Include="Models\IndexModel.cs" />

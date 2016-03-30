@@ -6,15 +6,7 @@
     <p>
         <label>Value</label>
         <input type="number" name="value">
-    </p>
-
-    <p>
-        <label>Email</label>
-        <input type="text" name="email">
-    </p>
-    <p>
-        <label>UserId</label>
-        <input type="text" name="userId">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     </p>
     <p>
            <input type="submit" value="Add"/>
