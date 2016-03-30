@@ -36,13 +36,13 @@ namespace Balance.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Group(string groupId)
+        public async Task<ActionResult> Group(string id)
         {
-            var id = new ObjectId(groupId);
-            var group = await _godService.GetGroup(id);
+            var groupId = new ObjectId(id);
+            var group = await _godService.GetGroup(groupId);
             return View(new GroupViewModel
             {
-                Id = id,
+                Id = groupId,
                 Name = group.Name,
                 Description = group.Description
             });
@@ -56,9 +56,10 @@ namespace Balance.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Payment(ObjectId id, PaymentModel model)
+        public async Task<ActionResult> Payment(string id, PaymentModel model)
         {
-            await _godService.AddPayment(id, model.Value, new ObjectId(model.UserId));
+            var groupId = new ObjectId(id); 
+            await _godService.AddPayment(groupId, model.Value, new ObjectId(model.UserId));
             return View();
         }
     }

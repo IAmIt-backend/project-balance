@@ -191,7 +191,7 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\Desktop\ModelAbstractions\ModelAbstractions.csproj">
+    <ProjectReference Include="..\ModelAbstractions\ModelAbstractions.csproj">
       <Project>{8158cb35-ea38-4e55-ba8a-56867c063cf6}</Project>
       <Name>ModelAbstractions</Name>
     </ProjectReference>
