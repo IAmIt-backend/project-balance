@@ -6,7 +6,6 @@ using RepositoryAbstraction;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ModelAbstractions
@@ -124,7 +123,7 @@ namespace ModelAbstractions
         public async Task<ICollection<UserListItemModel>> GetAllUsersInGroup(ObjectId groupId)
         {
             var users = await _groups.GetAllUsersInGroup(groupId);
-            return users.Select(u => new UserListItemModel { Id = u }).ToList();
+            return users.Select(u => new UserListItemModel { Id = u}).ToList();
         }
 
 
