@@ -87,21 +87,22 @@ namespace Balance.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddUserToGroup(string id, AddUserToGroupModel model)
+        public async Task<ActionResult> AddUserToGroup(string id, AddUserToGroupModel model)
         {
+            var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
             if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(User.Identity.GetUserName()))
             {
                 ModelState.AddModelError("", "Invalid email");
                 return View(new AddUserToGroupViewModel {Email = model.Email});
             }
-            else if (!_godService.IsUserAdministrator())
+            else if (! await _godService.IsUserAdministrator(new ObjectId(manager.FindByEmail(model.Email).Id), new ObjectId(id)))
             {
                 ModelState.AddModelError("", "You are not administrator");
                 return View(new AddUserToGroupViewModel { Email = model.Email });
             }
             else
             {
-                _godService.AddUserToGroup(
+                await _godService.AddUserToGroup(
                     new ObjectId(
                         HttpContext.GetOwinContext()
                             .GetUserManager<ApplicationUserManager>()

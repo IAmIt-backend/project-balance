@@ -21,3 +21,4 @@ namespace ModelAbstractions
         Task<ICollection<GroupListItemModel>> GetAllGroupsOfUser(ObjectId userId);
         Task<bool> IsUserAdministrator(ObjectId userId, ObjectId groupId);
     }
+}
