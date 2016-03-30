@@ -2,22 +2,24 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.WebPages.Instrumentation;
 using Balance.Models;
 using MongoDB.Bson;
 using System.Web.Services.Description;
+using MVCModels.Models;
 
 namespace Balance.Controllers
 {
     public class HomeController : Controller
     {
-        private Service _godService = new Service();
+        private ModelAbstractions.IService _godService = new ModelAbstractions.Service();
         [HttpGet]
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View(new IndexViewModel { Groups = _godService.GetAllGroups() });
+            return View(new IndexViewModel { Groups = await _godService.GetAllGroups() });
         }
 
         [HttpGet]
@@ -34,12 +36,14 @@ namespace Balance.Controllers
         }
 
         [HttpGet]
-        public ActionResult Group(ObjectId id)
+        public async Task<ActionResult> Group(ObjectId id)
         {
-            var group = _godService.GetGroup(id);
-            return View(new GroupViewModel {Id = id, Name = group.Name(),
-                Description = group.Description(),
-                Sum = group.Payments.Select(p => p.Value).Sum()
+            var group = await _godService.GetGroup(id);
+            var payments = await _godService.GetAllPayments(id);
+            return View(new GroupViewModel {Id = id, Name = group.Name,
+                Description = group.Description,
+                Payments = payments,
+                Sum = payments.Select(p => p.Value).Sum()
         });
         }
 
@@ -53,7 +57,7 @@ namespace Balance.Controllers
         [HttpPost]
         public ActionResult Payment(ObjectId id ,PaymentModel model)
         {
-            _godService.AddPayment(id, model.Value, model.Email);
+            _godService.AddPayment(id, model.Value, model.UserId);
             return View();
         }
     }
