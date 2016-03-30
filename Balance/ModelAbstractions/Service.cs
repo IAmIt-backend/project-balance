@@ -64,18 +64,19 @@ namespace ModelAbstractions
 
 
 
-        public async Task<AddGroupModel> GetGroup(ObjectId id)
-        {
-            var groups = await _groups.GetAllGroups();
-            if (!groups.Select(g => g.Id).Contains<ObjectId>(id))
+        public async Task<AddGroupModel> GetGroup(ObjectId id) { 
+            var group = await _groups.GetGroup(id);
+            if (group == null)
             {
                 throw new Exception("Такой группы не существует");
             }
-            return groups.Select(g => new AddGroupModel { Name = g.Name, Description = g.Description }).First();
+
+            return new AddGroupModel { Name = group.Name, Description = group.Description };
         }
+                 
 
 
-
+                
         /*public async Task<User> GetUser(string email)
         {
             var users = await _users.GetAllUsers();
@@ -92,9 +93,9 @@ namespace ModelAbstractions
 
         public async Task AddPayment(ObjectId groupId, decimal value, ObjectId userId)
         {
-            var groups = await _groups.GetAllGroups();
+            var group = await _groups.GetGroup(groupId);
             //var users = await _users.GetAllUsers();
-            if (!groups.Select(g => g.Id).Contains<ObjectId>(groupId))
+            if (group == null)
             {
                 throw new Exception("Такой группы не существует");
             }
@@ -112,9 +113,9 @@ namespace ModelAbstractions
 
         public async Task<ICollection<PaymentListItemModel>> GetAllPayments(ObjectId groupId)
         {
-            var groups = await _groups.GetAllGroups();
+            var group = await _groups.GetGroup(groupId);
             var payments = await _groups.GetAllPayments(groupId);
-            if (!groups.Select(g => g.Id).Contains<ObjectId>(groupId))
+            if (group == null)
             {
                 throw new Exception("Такой группы не существует");
             }
