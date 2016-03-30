@@ -59,7 +59,7 @@ namespace Balance.Controllers
         public async Task<ActionResult> Payment(string id, PaymentModel model)
         {
             var groupId = new ObjectId(id); 
-            await _godService.AddPayment(groupId, model.Value, new ObjectId(model.UserId));
+            await _godService.AddPayment(groupId, model.Value, new ObjectId());
             return View();
         }
     }

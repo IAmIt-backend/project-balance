@@ -16,5 +16,6 @@ namespace RepositoryAbstraction
         Task<bool> IsUserInGroup(ObjectId userId, ObjectId groupId);
         Task<Group> GetGroup(ObjectId id);
         Task<ICollection<Group>> GetAllGroups();
+        Task<ICollection<Payment>> GetAllPayments(ObjectId groupId);
     }
 }
