@@ -13,6 +13,7 @@ namespace ModelAbstractions
     {
         //Task<User> GetUser(string email);
         Task AddPayment(ObjectId groupId, decimal value, ObjectId userId);
+        Task<ICollection<PaymentListItemModel>> GetAllPayments(ObjectId groupId);
         Task AddGroup(AddGroupModel groupModel);
         Task AddUserToGroup(Role memberType, ObjectId userId, ObjectId groupId);
         Task<ICollection<GroupListItemModel>> GetAllGroups();

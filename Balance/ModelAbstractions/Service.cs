@@ -16,7 +16,7 @@ namespace ModelAbstractions
 
 
         private IGroupRepository _groups = new DbGroupRepository();
-       // private IUserRepository _users;
+        // private IUserRepository _users;
 
 
         public async Task AddGroup(AddGroupModel groupModel)
@@ -59,7 +59,7 @@ namespace ModelAbstractions
         public async Task<ICollection<GroupListItemModel>> GetAllGroups()
         {
             var groups = await _groups.GetAllGroups();
-            return groups.Select(g => new GroupListItemModel {Id = g.Id, Name = g.Name}).ToList();
+            return groups.Select(g => new GroupListItemModel { Id = g.Id, Name = g.Name }).ToList();
         }
 
 
@@ -71,7 +71,7 @@ namespace ModelAbstractions
             {
                 throw new Exception("Такой группы не существует");
             }
-            return groups.Select(g => new AddGroupModel {Name = g.Name, Description = g.Description}).First();
+            return groups.Select(g => new AddGroupModel { Name = g.Name, Description = g.Description }).First();
         }
 
 
@@ -102,11 +102,24 @@ namespace ModelAbstractions
             {
                 throw new Exception("Нельзя внести отрицательную или нулевую сумму");
             }
-           /* else if (!users.Contains<string>(email))
+            /* else if (!users.Contains<string>(email))
+             {
+                 throw new Exception("Такого пользователя не существует");
+             }*/
+            await _groups.AddPayment(groupId, new Payment { UserId = userId, Value = value });
+        }
+
+
+        public async Task<ICollection<PaymentListItemModel>> GetAllPayments(ObjectId groupId)
+        {
+            var groups = await _groups.GetAllGroups();
+            var payments = await _groups.GetAllPayments(groupId);
+            if (!groups.Select(g => g.Id).Contains<ObjectId>(groupId))
             {
-                throw new Exception("Такого пользователя не существует");
-            }*/
-            await _groups.AddPayment(groupId, new Payment { UserId = userId, Value = value});
+                throw new Exception("Такой группы не существует");
+            }
+            return payments.Select(p => new PaymentListItemModel { Id = p.UserId, Value = p.Value }).ToList();
+
         }
     }
 }
