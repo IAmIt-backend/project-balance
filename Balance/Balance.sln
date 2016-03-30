@@ -7,13 +7,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Balance", "Balance\Balance.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Entities", "Entities\Entities.csproj", "{49C11C4F-CE86-4C0F-BC7B-B68D690CDA25}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MongoDB", "MongoDB\MongoDB.csproj", "{B5A5959A-1997-45C3-9376-11E11F74AB5B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryAbstraction", "RepositoryAbstraction\RepositoryAbstraction.csproj", "{5EBEEC06-8808-4B0E-BB39-FB39D9944F81}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MVCModels", "MVCModels\MVCModels.csproj", "{D0D4C17E-E94A-4639-A7E7-9BEE51C68F0C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelAbstractions", "ModelAbstractions\ModelAbstractions.csproj", "{8158CB35-EA38-4E55-BA8A-56867C063CF6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MongoDB", "MongoDB\MongoDB.csproj", "{B5A5959A-1997-45C3-9376-11E11F74AB5B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RepositoryAbstraction", "RepositoryAbstraction\RepositoryAbstraction.csproj", "{5EBEEC06-8808-4B0E-BB39-FB39D9944F81}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,14 +29,6 @@ Global
 		{49C11C4F-CE86-4C0F-BC7B-B68D690CDA25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49C11C4F-CE86-4C0F-BC7B-B68D690CDA25}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49C11C4F-CE86-4C0F-BC7B-B68D690CDA25}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B5A5959A-1997-45C3-9376-11E11F74AB5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B5A5959A-1997-45C3-9376-11E11F74AB5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B5A5959A-1997-45C3-9376-11E11F74AB5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B5A5959A-1997-45C3-9376-11E11F74AB5B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5EBEEC06-8808-4B0E-BB39-FB39D9944F81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5EBEEC06-8808-4B0E-BB39-FB39D9944F81}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5EBEEC06-8808-4B0E-BB39-FB39D9944F81}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5EBEEC06-8808-4B0E-BB39-FB39D9944F81}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D0D4C17E-E94A-4639-A7E7-9BEE51C68F0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D0D4C17E-E94A-4639-A7E7-9BEE51C68F0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0D4C17E-E94A-4639-A7E7-9BEE51C68F0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -45,6 +37,14 @@ Global
 		{8158CB35-EA38-4E55-BA8A-56867C063CF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8158CB35-EA38-4E55-BA8A-56867C063CF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8158CB35-EA38-4E55-BA8A-56867C063CF6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B5A5959A-1997-45C3-9376-11E11F74AB5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B5A5959A-1997-45C3-9376-11E11F74AB5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B5A5959A-1997-45C3-9376-11E11F74AB5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B5A5959A-1997-45C3-9376-11E11F74AB5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EBEEC06-8808-4B0E-BB39-FB39D9944F81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EBEEC06-8808-4B0E-BB39-FB39D9944F81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EBEEC06-8808-4B0E-BB39-FB39D9944F81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5EBEEC06-8808-4B0E-BB39-FB39D9944F81}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -20,9 +20,20 @@ namespace MongoDB
             _groups = db.GetCollection<Group>(nameof(Group));
             _memberships = db.GetCollection<UserGroupMembership>(nameof(UserGroupMembership));
         }
-        public async Task<ICollection<ObjectId>> GetAllGroupsOfUser(ObjectId userId)
+        public async Task<bool> IsUserInGroup(ObjectId userId, ObjectId groupId)
         {
-            return (await _memberships.FindAsync(m => m.UserId == userId)).ToList().Select(m => m.GroupId).ToList();
+            return await _memberships.Find(m => m.GroupId == groupId && m.UserId == userId).AnyAsync();
+        }
+        public async Task<ICollection<Group>> GetAllGroupsOfUser(ObjectId userId)
+        {
+            var ids = (await _memberships.FindAsync(m => m.UserId == userId)).ToList().Select(m => m.GroupId).ToList();
+            var list = await _groups.Find(g => ids.Contains(g.Id)).ToListAsync();
+            return list;
+        }
+
+        public async Task<bool> IsUserAdministrator(ObjectId userId, ObjectId groupId)
+        {
+            return (await _memberships.Find(m => m.GroupId == groupId && m.UserId == userId).FirstOrDefaultAsync()).MemberType == Role.Administrator;
         }
     }
 }
