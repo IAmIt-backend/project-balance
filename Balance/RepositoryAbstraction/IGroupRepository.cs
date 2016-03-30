@@ -1,5 +1,4 @@
-﻿using Balance.Models;
-using Entities;
+﻿using Entities;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
@@ -17,5 +16,6 @@ namespace RepositoryAbstraction
         Task<bool> IsUserInGroup(ObjectId userId, ObjectId groupId);
         Task<Group> GetGroup(ObjectId id);
         Task<ICollection<Group>> GetAllGroups();
+        Task<ICollection<Payment>> GetAllPayments(ObjectId groupId);
     }
 }

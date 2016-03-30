@@ -5,19 +5,21 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.WebPages.Instrumentation;
-using Balance.Models;
 using MongoDB.Bson;
 using System.Web.Services.Description;
+using MVCModels.Models;
+using ModelAbstractions;
+using System.Threading.Tasks;
 
 namespace Balance.Controllers
 {
     public class HomeController : Controller
     {
-        private Service _godService = new Service();
+        private ModelAbstractions.Service _godService = new ModelAbstractions.Service();
         [HttpGet]
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            return View(new IndexViewModel { Groups = _godService.GetAllGroups() });
+            return View(new IndexViewModel { Groups = await _godService.GetAllGroups() });
         }
 
         [HttpGet]
@@ -27,20 +29,26 @@ namespace Balance.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddGroup(AddGroupModel model)
+        public async Task<ActionResult> AddGroup(AddGroupModel model)
         {
-            _godService.AddGroup(model);
-            return View();
+            await _godService.AddGroup(model);
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public ActionResult Group(ObjectId id)
+        public async Task<ActionResult> Group(string id)
         {
-            var group = _godService.GetGroup(id);
-            return View(new GroupViewModel {Id = id, Name = group.Name(),
-                Description = group.Description(),
-                Sum = group.Payments.Select(p => p.Value).Sum()
-        });
+            var groupId = new ObjectId(id);
+            var group = await _godService.GetGroup(groupId);
+            var payments = await _godService.GetAllPayments(groupId);
+            return View(new GroupViewModel
+            {
+                Id = groupId,
+                Name = group.Name,
+                Description = group.Description,
+                Payments = payments,
+                Sum = payments.Select(p => p.Value).Sum()
+            });
         }
 
 
@@ -51,10 +59,11 @@ namespace Balance.Controllers
         }
 
         [HttpPost]
-        public ActionResult Payment(ObjectId id ,PaymentModel model)
+        public async Task<ActionResult> Payment(string id, PaymentModel model)
         {
-            _godService.AddPayment(id, model.Value, model.Email);
-            return View();
+            var groupId = new ObjectId(id); 
+            await _godService.AddPayment(groupId, model.Value, new ObjectId());
+            return RedirectToAction("Group", new {Id = id});
         }
     }
 }
