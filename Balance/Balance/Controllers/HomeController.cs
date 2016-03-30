@@ -32,7 +32,7 @@ namespace Balance.Controllers
         public ActionResult AddGroup(AddGroupModel model)
         {
             _godService.AddGroup(model);
-            return View();
+            return RedirectToAction("Index");
         }
 
         [HttpGet]
@@ -58,7 +58,7 @@ namespace Balance.Controllers
         public ActionResult Payment(ObjectId id ,PaymentModel model)
         {
             _godService.AddPayment(id, model.Value, model.UserId);
-            return View();
+            return RedirectToAction("Group", id);
         }
     }
 }
