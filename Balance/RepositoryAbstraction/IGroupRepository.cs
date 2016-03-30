@@ -14,8 +14,8 @@ namespace RepositoryAbstraction
         Task AddUserToGroup(Role memberType, ObjectId userId, ObjectId groupId);
         Task AddPayment(ObjectId groupId, Payment payment);
         Task<bool> IsUserInGroup(ObjectId userId, ObjectId groupId);
+        Task<ICollection<ObjectId>> GetAllUsersInGroup(ObjectId groupId);
         Task<Group> GetGroup(ObjectId id);
-        Task<ICollection<Group>> GetAllGroups();
         Task<ICollection<Payment>> GetAllPayments(ObjectId groupId);
     }
 }
