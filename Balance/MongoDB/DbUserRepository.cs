@@ -10,7 +10,7 @@ using Entities;
 
 namespace MongoDB
 {
-    class DbUserRepository : IUserRepository
+    public class DbUserRepository : IUserRepository
     {
         private IMongoCollection<Group> _groups;
         private IMongoCollection<UserGroupMembership> _memberships;

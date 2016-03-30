@@ -16,14 +16,14 @@ namespace ModelAbstractions
 
 
         private IGroupRepository _groups = new DbGroupRepository();
-        // private IUserRepository _users;
+        private IUserRepository _users = new DbUserRepository();
 
 
-        public async Task AddGroup(AddGroupModel groupModel)
+        public async Task AddGroup(AddGroupModel groupModel, ObjectId userId)
         {
-            var groups = await _groups.GetAllGroups();
+            var groups = await _users.GetAllGroupsOfUser(userId);
             var id = new ObjectId();
-            if (groups.Select(g => g.Id).Contains(id))
+            if (groups.Select(g => userId).Contains(id))
             {
                 throw new Exception("Такая группа уже существует");
             }
@@ -35,6 +35,7 @@ namespace ModelAbstractions
                 Payments = new List<Payment>()
             };
             await _groups.AddGroup(group);
+            await _groups.AddUserToGroup(Role.Administrator, userId, id);
 
 
         }
@@ -43,24 +44,21 @@ namespace ModelAbstractions
 
         public async Task AddUserToGroup(Role memberType, ObjectId userId, ObjectId groupId)
         {
-            if (await _groups.IsUserInGroup(userId, groupId) == true)
+            if (await _users.IsUserInGroup(userId, groupId) == true)
             {
                 throw new Exception("Этот пользователь уже находится в группе");
             }
             else
             {
-                await _groups.AddUserToGroup(memberType, userId, groupId);
+                await _groups.AddUserToGroup(Role.Member, userId, groupId);
             }
 
         }
 
 
 
-        public async Task<ICollection<GroupListItemModel>> GetAllGroups()
-        {
-            var groups = await _groups.GetAllGroups();
-            return groups.Select(g => new GroupListItemModel { Id = g.Id, Name = g.Name }).ToList();
-        }
+ 
+
 
 
 
@@ -121,6 +119,19 @@ namespace ModelAbstractions
             }
             return payments.Select(p => new PaymentListItemModel { Id = p.UserId, Value = p.Value }).ToList();
 
+        }
+
+        public async Task<ICollection<UserListItemModel>> GetAllUsersInGroup(ObjectId groupId)
+        {
+            var users = await _groups.GetAllUsersInGroup(groupId);
+            return users.Select(u => new UserListItemModel { Id = u }).ToList();
+        }
+
+
+        public async Task<ICollection<GroupListItemModel>> GetAllGroupsOfUser(ObjectId userId)
+        {
+            var groups = await _users.GetAllGroupsOfUser(userId);
+            return groups.Select(g => new GroupListItemModel { Id = g.Id, Name = g.Name }).ToList();
         }
     }
 }
