@@ -45,14 +45,15 @@ namespace MongoDB
             
         }
 
-        public async Task<ICollection<Group>> GetAllGroups()
-        {   
-           return await _groups.AsQueryable().ToListAsync(); 
-        }
 
         public async Task<ICollection<Payment>> GetAllPayments(ObjectId groupId)
         {
             return (await _groups.Find(g => g.Id == groupId).FirstOrDefaultAsync()).Payments;
+        }
+
+        public Task<ICollection<ObjectId>> GetAllUsersInGroup(ObjectId groupId)
+        {
+            throw new NotImplementedException();
         }
 
         public async Task<Group> GetGroup(ObjectId id)
