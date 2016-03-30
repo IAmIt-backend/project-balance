@@ -15,7 +15,7 @@ namespace Balance.Controllers
 {
     public class HomeController : Controller
     {
-        private ModelAbstractions.Service _godService = new ModelAbstractions.Service();
+        private ModelAbstractions.IService _godService = new ModelAbstractions.Service();
         [HttpGet]
         public async Task<ActionResult> Index()
         {
@@ -36,14 +36,13 @@ namespace Balance.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> Group(string id)
+        public async Task<ActionResult> Group(ObjectId id)
         {
-            var groupId = new ObjectId(id);
-            var group = await _godService.GetGroup(groupId);
-            var payments = await _godService.GetAllPayments(groupId);
+            var group = await _godService.GetGroup(id);
+            var payments = await _godService.GetAllPayments(id);
             return View(new GroupViewModel
             {
-                Id = groupId,
+                Id = id,
                 Name = group.Name,
                 Description = group.Description,
                 Payments = payments,
@@ -59,10 +58,9 @@ namespace Balance.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Payment(string id, PaymentModel model)
+        public async Task<ActionResult> Payment(ObjectId id, PaymentModel model)
         {
-            var groupId = new ObjectId(id); 
-            await _godService.AddPayment(groupId, model.Value, new ObjectId());
+            await _godService.AddPayment(id, model.Value, new ObjectId());
             return RedirectToAction("Group", new {Id = id});
         }
     }
