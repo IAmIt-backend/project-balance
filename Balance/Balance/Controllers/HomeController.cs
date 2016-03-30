@@ -9,16 +9,19 @@ using System.Web.WebPages.Instrumentation;
 using Balance.Models;
 using MongoDB.Bson;
 using System.Web.Services.Description;
+using Microsoft.AspNet.Identity;
 using MVCModels.Models;
 
 namespace Balance.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         private ModelAbstractions.IService _godService = new ModelAbstractions.Service();
         [HttpGet]
         public async Task<ActionResult> Index()
         {
+            User.Identity.GetUserId();
             return View(new IndexViewModel { Groups = await _godService.GetAllGroups() });
         }
 
