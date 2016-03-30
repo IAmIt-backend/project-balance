@@ -12,8 +12,8 @@ namespace Balance
 		public static ApplicationIdentityContext Create()
 		{
 			// todo add settings where appropriate to switch server & database in your own application
-			var client = new MongoClient("mongodb://localhost:27017");
-			var database = client.GetDatabase("mydb");
+			var client = new MongoClient();
+			var database = client.GetDatabase("balance");
 			var users = database.GetCollection<ApplicationUser>("users");
 			var roles = database.GetCollection<IdentityRole>("roles");
 			return new ApplicationIdentityContext(users, roles);
