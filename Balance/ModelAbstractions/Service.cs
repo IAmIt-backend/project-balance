@@ -33,9 +33,10 @@ namespace ModelAbstractions
                 Description = groupModel.Description,
                 Payments = new List<Payment>()
             };
-             _groups.AddGroup(group);
-             _groups.AddUserToGroup(Role.Administrator, userId, group.Id);
-
+            var tasks = new Task[2];
+            tasks[0] = _groups.AddGroup(group);
+            tasks[1] = _groups.AddUserToGroup(Role.Administrator, userId, group.Id);
+            await Task.WhenAll(tasks);
 
         }
 

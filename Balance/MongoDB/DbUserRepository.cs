@@ -14,7 +14,8 @@ namespace MongoDB
     {
         private IMongoCollection<Group> _groups;
         private IMongoCollection<UserGroupMembership> _memberships;
-        public DbUserRepository(){
+        public DbUserRepository()
+        {
             var client = new MongoClient();
             var db = client.GetDatabase("balance");
             _groups = db.GetCollection<Group>(nameof(Group));
@@ -26,14 +27,17 @@ namespace MongoDB
         }
         public async Task<ICollection<Group>> GetAllGroupsOfUser(ObjectId userId)
         {
-            var ids = (await _memberships.FindAsync(m => m.UserId == userId)).ToList().Select(m => m.GroupId).ToList();
-            var list = await _groups.Find(g => ids.Contains(g.Id)).ToListAsync();
+            var ids = (await _memberships.FindAsync(m => m.UserId == userId)).ToList().Select(m => m.GroupId).ToArray();
+            var list = _groups.Find(g => ids.Contains(g.Id)).ToList();
             return list;
         }
 
         public async Task<bool> IsUserAdministrator(ObjectId userId, ObjectId groupId)
         {
-            return (await _memberships.Find(m => m.GroupId == groupId && m.UserId == userId).FirstOrDefaultAsync()).MemberType == Role.Administrator;
+            var membership = await _memberships.Find(m => m.GroupId == groupId && m.UserId == userId).FirstOrDefaultAsync();
+            if (membership == null)
+                return false;
+            return (membership.MemberType == Role.Administrator);
         }
     }
 }

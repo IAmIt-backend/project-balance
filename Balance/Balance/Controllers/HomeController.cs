@@ -100,12 +100,12 @@ namespace Balance.Controllers
         public async Task<ActionResult> AddUserToGroup(string id, AddUserToGroupModel model)
         {
             var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(User.Identity.GetUserName()))
+            if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(User.Identity.GetUserName()) || manager.FindByEmail(model.Email) == null)
             {
                 ModelState.AddModelError("", "Invalid email");
                 return View(new AddUserToGroupViewModel {Email = model.Email});
             }
-            else if (! await _godService.IsUserAdministrator(new ObjectId(manager.FindByEmail(model.Email).Id), new ObjectId(id)))
+            else if (! await _godService.IsUserAdministrator(new ObjectId(User.Identity.GetUserId()), new ObjectId(id)))
             {
                 ModelState.AddModelError("", "You are not administrator");
                 return View(new AddUserToGroupViewModel { Email = model.Email });
@@ -120,6 +120,11 @@ namespace Balance.Controllers
                             .Id), new ObjectId(id));
                 return RedirectToAction("Group", id);
             }
+        }
+        [HttpGet]
+        public async Task<ActionResult> AddUserToGroup()
+        {
+            return View();
         }
     }
 }
