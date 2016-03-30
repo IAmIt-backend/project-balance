@@ -5,6 +5,8 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Balance.Utils;
+using MongoDB.Bson;
 
 namespace Balance
 {
@@ -16,6 +18,7 @@ namespace Balance
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+            ModelBinders.Binders.Add(typeof(ObjectId), new ObjectIdBinder());
         }
     }
 }
