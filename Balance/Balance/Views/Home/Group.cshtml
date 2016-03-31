@@ -2,20 +2,39 @@
 @{
     ViewBag.Title = "Group";
 }
-<p><label>@Model.Name</label>
-</p>
-<p><label>@Model.Description</label>
+
+<p>
+    <label>Name @Model.Name</label>
 </p>
 <p>
-    @Html.ActionLink("Add Payment", "Payment", new {Id = @Model.Id.ToString()})
+    <label>Description @Model.Description</label>
 </p>
 <p>
-    <label>@Model.Sum</label>
+    @Html.ActionLink("Add Payment", "Payment", new { Id = @Model.Id.ToString() })
 </p>
 
-@foreach (var payment in Model.Payments)
-{
-    <p><label>@payment.Value</label></p>
-}
+<p>
+    @Html.ActionLink("Add User To Group", "AddUserToGroup", new { Id = Model.Id.ToString() });
+</p>
+<p>
+    <label>Payments</label>
+</p>
+<table border="1" style="border-collapse: collapse">
+    <tr><th>User name</th><th>Payment value</th></tr>
+    <tr><td><b>Total</b></td> <td>@Model.Sum</td></tr>
+    @foreach (var payment in Model.Payments)
+    {
+        <tr><td>@payment.UserName</td><td>@payment.Value</td></tr>
 
-
+    }
+</table>
+<p>
+    <label>Users</label>
+</p>
+<table border="1" style="border-collapse: collapse">
+    <tr><th>User name</th></tr>
+    @foreach (var user in Model.Users)
+    {
+        <tr><td>@user.Name</td></tr>
+    }
+</table>

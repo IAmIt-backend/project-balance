@@ -53,11 +53,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\AddGroupModel.cs" />
+    <Compile Include="Models\AddUserToGroupModel.cs" />
     <Compile Include="Models\GroupListItemModel.cs" />
     <Compile Include="Models\GroupModel.cs" />
     <Compile Include="Models\IndexModel.cs" />
     <Compile Include="Models\PaymentListItemModel.cs" />
     <Compile Include="Models\PaymentModel.cs" />
+    <Compile Include="Models\UserListItemModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -45,14 +45,15 @@ namespace MongoDB
             
         }
 
-        public async Task<ICollection<Group>> GetAllGroups()
-        {   
-           return await _groups.AsQueryable().ToListAsync(); 
-        }
 
         public async Task<ICollection<Payment>> GetAllPayments(ObjectId groupId)
         {
             return (await _groups.Find(g => g.Id == groupId).FirstOrDefaultAsync()).Payments;
+        }
+
+        public async Task<ICollection<ObjectId>> GetAllUsersInGroup(ObjectId groupId)
+        {
+            return  (await _memberships.FindAsync(m => m.GroupId == groupId)).ToList().Select(m => m.UserId).ToList();
         }
 
         public async Task<Group> GetGroup(ObjectId id)
@@ -61,9 +62,14 @@ namespace MongoDB
 
         }
 
-        public async Task<bool> IsUserInGroup(ObjectId userId, ObjectId groupId)
+        public async Task<Payment> GetPayment(ObjectId groupId, ObjectId userId)
         {
-            return await _memberships.Find(m => m.GroupId == groupId && m.UserId == userId).AnyAsync();
+            return (await _groups.Find(g => g.Id == groupId).FirstOrDefaultAsync()).Payments.FirstOrDefault(p => p.UserId == userId);
+        }
+
+        public async Task<Payment> SetPayment(ObjectId groupId, ObjectId userId, decimal Value)
+        {
+            throw new NotImplementedException();
         }
     }
 }

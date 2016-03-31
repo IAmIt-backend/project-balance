@@ -12,7 +12,8 @@ namespace Balance.ViewModels
         public ObjectId Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public ICollection<PaymentListItemModel> Payments { get; set; }
+        public List<PaymentListItemModel> Payments { get; set; }
         public decimal Sum { get; set; }
+        public List<UserListItemModel> Users { get; set; }
     }
 }

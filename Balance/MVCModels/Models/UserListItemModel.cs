@@ -2,13 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace MVCModels.Models
 {
-    public class AddGroupModel
+    public class UserListItemModel
     {
+        public ObjectId Id { get; set; }
         public string Name { get; set; }
-        public string Description { get; set; }
     }
 }

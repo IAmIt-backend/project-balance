@@ -1,0 +1,14 @@
+﻿@model Balance.ViewModels.AddUserToGroupViewModel
+@{
+    ViewBag.Title = "AddUserToGroup";
+}
+<form action="" method="post">
+    <p>
+        <label>Email</label>
+        <input type="text" name="email">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    </p>
+    <p>
+        <input type="submit" value="Add" />
+    </p>
+</form>

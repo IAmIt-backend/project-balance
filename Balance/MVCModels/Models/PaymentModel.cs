@@ -9,7 +9,5 @@ namespace MVCModels.Models
     public class PaymentModel
     {
         public decimal Value { get; set; }
-        public string Email { get; set; }
-        public ObjectId UserId { get; set; }
     }
 }

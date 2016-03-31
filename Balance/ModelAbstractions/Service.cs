@@ -6,7 +6,6 @@ using RepositoryAbstraction;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ModelAbstractions
@@ -16,14 +15,14 @@ namespace ModelAbstractions
 
 
         private IGroupRepository _groups = new DbGroupRepository();
-        // private IUserRepository _users;
+        private IUserRepository _users = new DbUserRepository();
 
 
-        public async Task AddGroup(AddGroupModel groupModel)
+        public async Task AddGroup(AddGroupModel groupModel, ObjectId userId)
         {
-            var groups = await _groups.GetAllGroups();
-            var id = new ObjectId();
-            if (groups.Select(g => g.Id).Contains(id))
+            var groups = await _users.GetAllGroupsOfUser(userId);
+            var id = ObjectId.GenerateNewId();
+            if (groups.Select(g => userId).Contains(id))
             {
                 throw new Exception("Такая группа уже существует");
             }
@@ -35,36 +34,34 @@ namespace ModelAbstractions
                 Payments = new List<Payment>()
             };
             await _groups.AddGroup(group);
-
+            await _groups.AddUserToGroup(Role.Administrator, userId, id);
 
         }
 
 
 
-        public async Task AddUserToGroup(Role memberType, ObjectId userId, ObjectId groupId)
+        public async Task AddUserToGroup(ObjectId userId, ObjectId groupId)
         {
-            if (await _groups.IsUserInGroup(userId, groupId) == true)
+            if (await _users.IsUserInGroup(userId, groupId) == true)
             {
                 throw new Exception("Этот пользователь уже находится в группе");
             }
             else
             {
-                await _groups.AddUserToGroup(memberType, userId, groupId);
+                await _groups.AddUserToGroup(Role.Member, userId, groupId);
             }
 
         }
 
 
 
-        public async Task<ICollection<GroupListItemModel>> GetAllGroups()
+
+
+
+
+
+        public async Task<AddGroupModel> GetGroup(ObjectId id)
         {
-            var groups = await _groups.GetAllGroups();
-            return groups.Select(g => new GroupListItemModel { Id = g.Id, Name = g.Name }).ToList();
-        }
-
-
-
-        public async Task<AddGroupModel> GetGroup(ObjectId id) { 
             var group = await _groups.GetGroup(id);
             if (group == null)
             {
@@ -73,10 +70,10 @@ namespace ModelAbstractions
 
             return new AddGroupModel { Name = group.Name, Description = group.Description };
         }
-                 
 
 
-                
+
+
         /*public async Task<User> GetUser(string email)
         {
             var users = await _users.GetAllUsers();
@@ -121,6 +118,26 @@ namespace ModelAbstractions
             }
             return payments.Select(p => new PaymentListItemModel { Id = p.UserId, Value = p.Value }).ToList();
 
+        }
+
+        public async Task<ICollection<ObjectId>> GetAllUsersInGroup(ObjectId groupId)
+        {
+            var users = await _groups.GetAllUsersInGroup(groupId);
+            return users.ToList();
+        }
+
+
+        public async Task<ICollection<GroupListItemModel>> GetAllGroupsOfUser(ObjectId userId)
+        {
+            var groups = await _users.GetAllGroupsOfUser(userId);
+            return groups.Select(g => new GroupListItemModel { Id = g.Id, Name = g.Name }).ToList();
+        }
+
+
+        public async Task<bool> IsUserAdministrator(ObjectId userId, ObjectId groupId)
+        {
+            var role = await _users.IsUserAdministrator(userId, groupId);
+            return role;
         }
     }
 }
