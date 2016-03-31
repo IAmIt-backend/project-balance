@@ -14,11 +14,20 @@ namespace ModelAbstractions
         //Task<User> GetUser(string email);
         Task AddPayment(ObjectId groupId, decimal value, ObjectId userId);
         Task<ICollection<PaymentListItemModel>> GetAllPayments(ObjectId groupId);
+
         Task AddGroup(AddGroupModel groupModel, ObjectId userId);
         Task AddUserToGroup(ObjectId userId, ObjectId groupId);
         Task<ICollection<ObjectId>> GetAllUsersInGroup(ObjectId groupId);
         Task<AddGroupModel> GetGroup(ObjectId id);
+
         Task<ICollection<GroupListItemModel>> GetAllGroupsOfUser(ObjectId userId);
         Task<bool> IsUserAdministrator(ObjectId userId, ObjectId groupId);
+
+        Task VerifyInvitation(ObjectId userId, ObjectId groupId);
+        Task RejectInvitingToGroup(ObjectId userId, ObjectId groupId);
+        Task<ICollection<AddGroupModel>> GetAllInvitations(ObjectId userId);
+
+        //Task<bool> IsGroupActive(ObjectId groupId);
+        //Task SetGroupState(ObjectId groupId);
     }
 }

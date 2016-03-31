@@ -31,7 +31,8 @@ namespace ModelAbstractions
                 Id = id,
                 Name = groupModel.Name,
                 Description = groupModel.Description,
-                Payments = new List<Payment>()
+                Payments = new List<Payment>(),
+                State = State.Active
             };
             await _groups.AddGroup(group);
             await _groups.AddUserToGroup(Role.Administrator, userId, id);
@@ -52,11 +53,6 @@ namespace ModelAbstractions
             }
 
         }
-
-
-
-
-
 
 
 
@@ -139,5 +135,31 @@ namespace ModelAbstractions
             var role = await _users.IsUserAdministrator(userId, groupId);
             return role;
         }
+
+        public async Task VerifyInvitation(ObjectId userId, ObjectId groupId)
+        {
+            await _users.VerifyInvitation(userId, groupId);
+        }
+
+        public async Task RejectInvitation(ObjectId userId, ObjectId groupId)
+        {
+            await _users.RejectInvitation(userId, groupId);
+        }
+
+        public async Task<ICollection<AddGroupModel>> GetAllInvitations(ObjectId userId)
+        {
+           return (await _users.GetAllInvitations(userId))
+                .Select(g => new AddGroupModel {Name = g.Name, Description = g.Description }).ToList();
+        }
+
+        /*public async Task<bool> IsGroupActive(ObjectId groupId)
+        {
+            return await _groups.IsGroupActive(groupId); 
+        }
+
+        public async Task SetGroupState(ObjectId groupId)
+        {
+            await _groups.SetGroupState(groupId, State.Passive);
+        }*/
     }
 }
