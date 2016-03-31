@@ -21,7 +21,7 @@ namespace ModelAbstractions
         public async Task AddGroup(AddGroupModel groupModel, ObjectId userId)
         {
             var groups = await _users.GetAllGroupsOfUser(userId);
-            var id = new ObjectId();
+            var id = ObjectId.GenerateNewId();
             if (groups.Select(g => userId).Contains(id))
             {
                 throw new Exception("Такая группа уже существует");
@@ -33,10 +33,8 @@ namespace ModelAbstractions
                 Description = groupModel.Description,
                 Payments = new List<Payment>()
             };
-            var tasks = new Task[2];
-            tasks[0] = _groups.AddGroup(group);
-            tasks[1] = _groups.AddUserToGroup(Role.Administrator, userId, group.Id);
-            await Task.WhenAll(tasks);
+            await _groups.AddGroup(group);
+            await _groups.AddUserToGroup(Role.Administrator, userId, id);
 
         }
 
@@ -122,10 +120,10 @@ namespace ModelAbstractions
 
         }
 
-        public async Task<ICollection<UserListItemModel>> GetAllUsersInGroup(ObjectId groupId)
+        public async Task<ICollection<ObjectId>> GetAllUsersInGroup(ObjectId groupId)
         {
             var users = await _groups.GetAllUsersInGroup(groupId);
-            return users.Select(u => new UserListItemModel { Id = u }).ToList();
+            return users.ToList();
         }
 
 

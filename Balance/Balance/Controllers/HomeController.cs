@@ -32,9 +32,9 @@ namespace Balance.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddGroup(AddGroupModel model)
+        public async Task<ActionResult> AddGroup(AddGroupModel model)
         {
-            if (string.IsNullOrEmpty(model.Name) || model.Description == null)
+            if (string.IsNullOrEmpty(model.Name) || string.IsNullOrEmpty(model.Description))
             {
                 ModelState.AddModelError("", "Fill all fields");
                 return
@@ -42,7 +42,7 @@ namespace Balance.Controllers
             }
             else
             {
-                _godService.AddGroup(model, new ObjectId(User.Identity.GetUserId()));
+                await _godService.AddGroup(model, new ObjectId(User.Identity.GetUserId()));
                 return RedirectToAction("Index");
             }
         }
@@ -53,7 +53,13 @@ namespace Balance.Controllers
             var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
             var group = await _godService.GetGroup(id);
             var falsePayments = await _godService.GetAllPayments(id);
-            var users = await _godService.GetAllUsersInGroup(id);
+            var userIds = await _godService.GetAllUsersInGroup(id);
+            var users = userIds.Select(l => new UserListItemModel
+            {
+                Id = l,
+                Name = manager.FindById(l.ToString()).UserName
+            }).ToList();
+
             var payments =
                 falsePayments.Select(
                     l =>
@@ -61,15 +67,15 @@ namespace Balance.Controllers
                         {
                             Id = l.Id,
                             Value = l.Value,
-                            UserName = manager.FindById(l.Id.ToString()).UserName
+                            UserName = users.First(u => u.Id == l.Id).Name
                         }).ToList();
+
 
             return View(new GroupViewModel {Id = id, Name = group.Name,
                 Description = group.Description,
                 Payments = payments,
                 Sum = payments.Select(p => p.Value).Sum(),
-                Users = users.Select(
-                l => new UserListItemModel { Id = l.Id, Name = manager.FindById(l.Id.ToString()).UserName }).ToList()
+                Users = users
         });
         }
 
@@ -81,18 +87,18 @@ namespace Balance.Controllers
         }
 
         [HttpPost]
-        public ActionResult Payment(ObjectId id ,PaymentModel model)
+        public async Task<ActionResult> Payment(ObjectId id ,PaymentModel model)
         {
-            if (model.Value == default(decimal) || model.Value < 0)
+            if (model.Value <= 0)
             {
                 ModelState.AddModelError("", "Invalid value");
-                return View(new PaymentViewModel {});
+                return View(new PaymentViewModel { Value = model.Value });
             }
             else
             {
                 var userId = new ObjectId(User.Identity.GetUserId());
-                _godService.AddPayment(id, model.Value, userId);
-                return RedirectToAction("Group/" + id, "Home");
+                await _godService.AddPayment(id, model.Value, userId);
+                return RedirectToAction("Group", "Home", new {Id = id});
             }
         }
 
@@ -100,7 +106,8 @@ namespace Balance.Controllers
         public async Task<ActionResult> AddUserToGroup(string id, AddUserToGroupModel model)
         {
             var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            if (string.IsNullOrEmpty(model.Email) || string.IsNullOrEmpty(User.Identity.GetUserName()) || manager.FindByEmail(model.Email) == null)
+            var user = manager.FindByEmail(model.Email);
+            if (string.IsNullOrEmpty(model.Email) || user == null)
             {
                 ModelState.AddModelError("", "Invalid email");
                 return View(new AddUserToGroupViewModel {Email = model.Email});
@@ -114,15 +121,12 @@ namespace Balance.Controllers
             {
                 await _godService.AddUserToGroup(
                     new ObjectId(
-                        HttpContext.GetOwinContext()
-                            .GetUserManager<ApplicationUserManager>()
-                            .FindByEmail(model.Email)
-                            .Id), new ObjectId(id));
-                return RedirectToAction("Group/"+id, "Home");
+                        user.Id), new ObjectId(id));
+                return RedirectToAction("Group", "Home", new {Id = id});
             }
         }
         [HttpGet]
-        public async Task<ActionResult> AddUserToGroup()
+        public ActionResult AddUserToGroup()
         {
             return View();
         }

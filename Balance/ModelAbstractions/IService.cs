@@ -16,7 +16,7 @@ namespace ModelAbstractions
         Task<ICollection<PaymentListItemModel>> GetAllPayments(ObjectId groupId);
         Task AddGroup(AddGroupModel groupModel, ObjectId userId);
         Task AddUserToGroup(ObjectId userId, ObjectId groupId);
-        Task<ICollection<UserListItemModel>> GetAllUsersInGroup(ObjectId groupId);
+        Task<ICollection<ObjectId>> GetAllUsersInGroup(ObjectId groupId);
         Task<AddGroupModel> GetGroup(ObjectId id);
         Task<ICollection<GroupListItemModel>> GetAllGroupsOfUser(ObjectId userId);
         Task<bool> IsUserAdministrator(ObjectId userId, ObjectId groupId);
