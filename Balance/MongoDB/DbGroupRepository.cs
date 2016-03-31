@@ -54,7 +54,7 @@ namespace MongoDB
 
         public async Task<ICollection<ObjectId>> GetAllUsersInGroup(ObjectId groupId)
         {
-            return  (await _memberships.FindAsync(m => m.GroupId == groupId && m.IsVerified)).ToList().Select(m => m.UserId).ToList();
+            return  (await _memberships.FindAsync(m => m.GroupId == groupId /*&& m.IsVerified*/)).ToList().Select(m => m.UserId).ToList();
         }
 
         public async Task<Group> GetGroup(ObjectId id)

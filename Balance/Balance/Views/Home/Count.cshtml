@@ -1,0 +1,18 @@
+﻿@model Balance.ViewModels.CountViewModel
+@{
+    ViewBag.Title = "Count";
+}
+<p>
+    <label>@Model.Type</label>
+</p>
+<table border="1" style="border-collapse: collapse">
+    <tr><th>Name</th><th>Credit</th></tr>
+    @foreach (var credit in Model.Credits)
+    {
+        <tr><td>@credit.Name</td><td>@credit.Credit</td></tr>
+
+    }
+</table>
+<p>
+    @Html.ActionLink("OK", "Group", new { Id = @Model.Id })
+</p>

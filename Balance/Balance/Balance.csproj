@@ -184,6 +184,7 @@
     <Compile Include="ViewModels\AccountViewModels.cs" />
     <Compile Include="ViewModels\AddGroupViewModel.cs" />
     <Compile Include="ViewModels\AddUserToGroupViewModel.cs" />
+    <Compile Include="ViewModels\CountViewModel.cs" />
     <Compile Include="ViewModels\GroupViewModel.cs" />
     <Compile Include="ViewModels\IndexViewModel.cs" />
     <Compile Include="ViewModels\PaymentViewModel.cs" />
@@ -229,6 +230,7 @@
     <Content Include="Views\Home\Group.cshtml" />
     <Content Include="Views\Home\Payment.cshtml" />
     <Content Include="Views\Home\AddUserToGroup.cshtml" />
+    <Content Include="Views\Home\Count.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

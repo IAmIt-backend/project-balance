@@ -125,7 +125,7 @@ namespace ModelAbstractions
 
         public async Task<ICollection<GroupListItemModel>> GetAllGroupsOfUser(ObjectId userId)
         {
-            var groups = await _users.GetAllGroupsOfUser(userId);
+            var groups = (await _users.GetAllGroupsOfUser(userId));
             return groups.Select(g => new GroupListItemModel { Id = g.Id, Name = g.Name }).ToList();
         }
 

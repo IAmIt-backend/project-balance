@@ -130,5 +130,130 @@ namespace Balance.Controllers
         {
             return View();
         }
+
+        [HttpGet]
+        public async Task<ActionResult> Count(string id)
+        {
+            var payments = (await _godService.GetAllPayments(new ObjectId(id))).GroupBy(u => u.Id);
+            var values = payments.Select(g => new CountListItemModel {Id = g.Key, Value = g.ToList().Select(a => a.Value).Sum()}).ToList();
+            var constant = values.Select(v => v.Value).Sum()/values.Count();
+            var newValues = values.Select(v => new CountListItemModel {Id = v.Id, Value = v.Value - constant});
+
+            var minuses = new List<CountListItemModel>();
+            var pluses = new List<CountListItemModel>();
+
+            for (int t = 0; t < values.Count(); t++)
+            {
+                var value = newValues.ElementAt(t);
+                if (value.Value > 0)
+                {
+                    minuses.Add(value);
+                }
+                else
+                {
+                    pluses.Add(value);
+                }
+            }
+            var viewModel = new CountViewModel();
+            viewModel.Id = id;
+            var currentUser = minuses.FirstOrDefault(m => m.Id == new ObjectId(User.Identity.GetUserId()));
+            if (currentUser != null)
+            {
+                //he is debtor
+                while (minuses.ElementAt(0) != currentUser)
+                {
+                    if (Math.Abs(minuses.ElementAt(0).Value) > pluses.ElementAt(0).Value)
+                    {
+                        minuses.ElementAt(0).Value += pluses.ElementAt(0).Value;
+                        pluses.RemoveAt(0);
+                    }
+                    if (Math.Abs(minuses.ElementAt(0).Value) < pluses.ElementAt(0).Value)
+                    {
+                        pluses.ElementAt(0).Value += minuses.ElementAt(0).Value;
+                        minuses.RemoveAt(0);
+                    }
+                    if (Math.Abs(minuses.ElementAt(0).Value) == pluses.ElementAt(0).Value)
+                    {
+                        minuses.RemoveAt(0);
+                        pluses.RemoveAt(0);
+                    }
+                }
+                var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+                while (minuses.ElementAt(0).Value < 0)
+                {
+                    if (Math.Abs(minuses.ElementAt(0).Value) >= pluses.ElementAt(0).Value)
+                    {
+                        viewModel.Credits.Add(new CreditModel
+                        {
+                            Credit = pluses.ElementAt(0).Value,
+                            Name = manager.FindById(pluses.ElementAt(0).Id.ToString()).UserName
+                        });
+                        minuses.ElementAt(0).Value += pluses.ElementAt(0).Value;
+                        pluses.RemoveAt(0);
+                    }
+                    if (Math.Abs(minuses.ElementAt(0).Value) < pluses.ElementAt(0).Value)
+                    {
+                        viewModel.Credits.Add(new CreditModel
+                        {
+                            Credit = Math.Abs(minuses.ElementAt(0).Value),
+                            Name = manager.FindById(pluses.ElementAt(0).Id.ToString()).UserName
+                        });
+                        minuses.ElementAt(0).Value += pluses.ElementAt(0).Value;
+                    }
+                }
+                viewModel.Type = "Your credits";
+            }
+            else
+            {
+                {
+                    //he is debtor
+                    var currentPlusUser = pluses.FirstOrDefault(m => m.Id == new ObjectId(User.Identity.GetUserId()));
+                    while (pluses.ElementAt(0) != currentPlusUser)
+                    {
+                        if (Math.Abs(minuses.ElementAt(0).Value) > pluses.ElementAt(0).Value)
+                        {
+                            minuses.ElementAt(0).Value += pluses.ElementAt(0).Value;
+                            pluses.RemoveAt(0);
+                        }
+                        if (Math.Abs(minuses.ElementAt(0).Value) < pluses.ElementAt(0).Value)
+                        {
+                            pluses.ElementAt(0).Value += minuses.ElementAt(0).Value;
+                            minuses.RemoveAt(0);
+                        }
+                        if (Math.Abs(minuses.ElementAt(0).Value) == pluses.ElementAt(0).Value)
+                        {
+                            minuses.RemoveAt(0);
+                            pluses.RemoveAt(0);
+                        }
+                    }
+                    var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+                    while (pluses.ElementAt(0).Value > 0)
+                    {
+                        if (pluses.ElementAt(0).Value >= Math.Abs(minuses.ElementAt(0).Value))
+                        {
+                            viewModel.Credits.Add(new CreditModel
+                            {
+                                Credit = Math.Abs(minuses.ElementAt(0).Value),
+                                Name = manager.FindById(minuses.ElementAt(0).Id.ToString()).UserName
+                            });
+                            pluses.ElementAt(0).Value += minuses.ElementAt(0).Value;
+                            minuses.RemoveAt(0);
+                        }
+                        if (pluses.ElementAt(0).Value < Math.Abs(minuses.ElementAt(0).Value))
+                        {
+                            viewModel.Credits.Add(new CreditModel
+                            {
+                                Credit = pluses.ElementAt(0).Value,
+                                Name = manager.FindById(minuses.ElementAt(0).Id.ToString()).UserName
+                            });
+                            minuses.ElementAt(0).Value += pluses.ElementAt(0).Value;
+                        }
+                    }
+                    viewModel.Type = "Your creditors";
+                }
+            }
+
+            return View(viewModel);
+        }
     }
 }

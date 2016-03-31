@@ -27,7 +27,7 @@ namespace MongoDB
         }
         public async Task<ICollection<Group>> GetAllGroupsOfUser(ObjectId userId)
         {
-            var ids = (await _memberships.FindAsync(m => m.UserId == userId && m.IsVerified)).ToList().Select(m => m.GroupId).ToArray();
+            var ids = (await _memberships.FindAsync(m => m.UserId == userId/* && m.IsVerified*/)).ToList().Select(m => m.GroupId).ToArray();
             var list = _groups.Find(g => ids.Contains(g.Id)).ToList();
             return list;
         }
@@ -53,7 +53,7 @@ namespace MongoDB
 
         public async Task<ICollection<Group>> GetAllInvitations(ObjectId userId)
         {
-            var ids = _memberships.Find(m => m.UserId == userId && !m.IsVerified).ToList().Select(m => m.GroupId).ToArray();
+            var ids = _memberships.Find(m => m.UserId == userId /*&& !m.IsVerified*/).ToList().Select(m => m.GroupId).ToArray();
             return await _groups.Find(g => ids.Contains(g.Id)).ToListAsync();
         }
     }

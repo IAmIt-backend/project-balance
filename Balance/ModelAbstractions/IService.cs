@@ -24,7 +24,7 @@ namespace ModelAbstractions
         Task<bool> IsUserAdministrator(ObjectId userId, ObjectId groupId);
 
         Task VerifyInvitation(ObjectId userId, ObjectId groupId);
-        Task RejectInvitingToGroup(ObjectId userId, ObjectId groupId);
+        Task RejectInvitation(ObjectId userId, ObjectId groupId);
         Task<ICollection<AddGroupModel>> GetAllInvitations(ObjectId userId);
 
         //Task<bool> IsGroupActive(ObjectId groupId);
