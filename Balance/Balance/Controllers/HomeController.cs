@@ -137,7 +137,7 @@ namespace Balance.Controllers
             var payments = (await _godService.GetAllPayments(new ObjectId(id))).GroupBy(u => u.Id);
             var values = payments.Select(g => new CountListItemModel {Id = g.Key, Value = g.ToList().Select(a => a.Value).Sum()}).ToList();
             var constant = values.Select(v => v.Value).Sum()/values.Count();
-            var newValues = values.Select(v => new CountListItemModel {Id = v.Id, Value = v.Value - constant});
+            var newValues = values.Select(v => new CountListItemModel {Id = v.Id, Value = v.Value - constant}).ToList();
 
             var minuses = new List<CountListItemModel>();
             var pluses = new List<CountListItemModel>();
@@ -147,15 +147,14 @@ namespace Balance.Controllers
                 var value = newValues.ElementAt(t);
                 if (value.Value > 0)
                 {
-                    minuses.Add(value);
+                    pluses.Add(value);
                 }
                 else
                 {
-                    pluses.Add(value);
+                    minuses.Add(value);
                 }
             }
-            var viewModel = new CountViewModel();
-            viewModel.Id = id;
+            var viewModel = new CountViewModel { Id = id, Credits = new List<CreditModel>(), Type = ""};
             var currentUser = minuses.FirstOrDefault(m => m.Id == new ObjectId(User.Identity.GetUserId()));
             if (currentUser != null)
             {
@@ -167,12 +166,12 @@ namespace Balance.Controllers
                         minuses.ElementAt(0).Value += pluses.ElementAt(0).Value;
                         pluses.RemoveAt(0);
                     }
-                    if (Math.Abs(minuses.ElementAt(0).Value) < pluses.ElementAt(0).Value)
+                    else if (Math.Abs(minuses.ElementAt(0).Value) < pluses.ElementAt(0).Value)
                     {
                         pluses.ElementAt(0).Value += minuses.ElementAt(0).Value;
                         minuses.RemoveAt(0);
                     }
-                    if (Math.Abs(minuses.ElementAt(0).Value) == pluses.ElementAt(0).Value)
+                    else if (Math.Abs(minuses.ElementAt(0).Value) == pluses.ElementAt(0).Value)
                     {
                         minuses.RemoveAt(0);
                         pluses.RemoveAt(0);
@@ -191,7 +190,7 @@ namespace Balance.Controllers
                         minuses.ElementAt(0).Value += pluses.ElementAt(0).Value;
                         pluses.RemoveAt(0);
                     }
-                    if (Math.Abs(minuses.ElementAt(0).Value) < pluses.ElementAt(0).Value)
+                    else if (Math.Abs(minuses.ElementAt(0).Value) < pluses.ElementAt(0).Value)
                     {
                         viewModel.Credits.Add(new CreditModel
                         {
@@ -206,21 +205,21 @@ namespace Balance.Controllers
             else
             {
                 {
-                    //he is debtor
+                    //he is creditor
                     var currentPlusUser = pluses.FirstOrDefault(m => m.Id == new ObjectId(User.Identity.GetUserId()));
-                    while (pluses.ElementAt(0) != currentPlusUser)
+                    while (pluses.ElementAt(0).Id != currentPlusUser.Id)
                     {
                         if (Math.Abs(minuses.ElementAt(0).Value) > pluses.ElementAt(0).Value)
                         {
                             minuses.ElementAt(0).Value += pluses.ElementAt(0).Value;
                             pluses.RemoveAt(0);
                         }
-                        if (Math.Abs(minuses.ElementAt(0).Value) < pluses.ElementAt(0).Value)
+                        else if (Math.Abs(minuses.ElementAt(0).Value) < pluses.ElementAt(0).Value)
                         {
                             pluses.ElementAt(0).Value += minuses.ElementAt(0).Value;
                             minuses.RemoveAt(0);
                         }
-                        if (Math.Abs(minuses.ElementAt(0).Value) == pluses.ElementAt(0).Value)
+                        else if (Math.Abs(minuses.ElementAt(0).Value) == pluses.ElementAt(0).Value)
                         {
                             minuses.RemoveAt(0);
                             pluses.RemoveAt(0);
@@ -239,14 +238,14 @@ namespace Balance.Controllers
                             pluses.ElementAt(0).Value += minuses.ElementAt(0).Value;
                             minuses.RemoveAt(0);
                         }
-                        if (pluses.ElementAt(0).Value < Math.Abs(minuses.ElementAt(0).Value))
+                        else if (pluses.ElementAt(0).Value < Math.Abs(minuses.ElementAt(0).Value))
                         {
                             viewModel.Credits.Add(new CreditModel
                             {
                                 Credit = pluses.ElementAt(0).Value,
                                 Name = manager.FindById(minuses.ElementAt(0).Id.ToString()).UserName
                             });
-                            minuses.ElementAt(0).Value += pluses.ElementAt(0).Value;
+                            pluses.ElementAt(0).Value += minuses.ElementAt(0).Value;
                         }
                     }
                     viewModel.Type = "Your creditors";
