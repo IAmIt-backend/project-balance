@@ -3,9 +3,10 @@
     ViewBag.Title = "Count";
 }
 <p>
-    <label>@Model.Type</label>
+    <h3><label class="label label-default">@Model.Type</label></h3>
 </p>
-<table border="1" style="border-collapse: collapse">
+
+<table class="table table-bordered">
     <tr><th>Name</th><th>Credit</th></tr>
     @foreach (var credit in Model.Credits)
     {
@@ -14,5 +15,5 @@
     }
 </table>
 <p>
-    @Html.ActionLink("OK", "Group", new { Id = @Model.Id })
+    <h4><label class="label label-success">@Html.ActionLink("OK", "Group", new { Id = @Model.Id })</label></h4>
 </p>
