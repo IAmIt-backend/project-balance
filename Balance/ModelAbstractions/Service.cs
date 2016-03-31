@@ -67,39 +67,9 @@ namespace ModelAbstractions
             return new AddGroupModel { Name = group.Name, Description = group.Description };
         }
 
-
-
-
-        /*public async Task<User> GetUser(string email)
-        {
-            var users = await _users.GetAllUsers();
-            if (email == null)
-            {
-                throw new Exception("Неверный email");
-            }
-            return user;
-
-
-        }*/
-
-
-
         public async Task AddPayment(ObjectId groupId, decimal value, ObjectId userId)
         {
             var group = await _groups.GetGroup(groupId);
-            //var users = await _users.GetAllUsers();
-            if (group == null)
-            {
-                throw new Exception("Такой группы не существует");
-            }
-            else if (value <= 0)
-            {
-                throw new Exception("Нельзя внести отрицательную или нулевую сумму");
-            }
-            /* else if (!users.Contains<string>(email))
-             {
-                 throw new Exception("Такого пользователя не существует");
-             }*/
             await _groups.AddPayment(groupId, new Payment { UserId = userId, Value = value });
         }
 
@@ -152,7 +122,7 @@ namespace ModelAbstractions
                 .Select(g => new AddGroupModel {Name = g.Name, Description = g.Description }).ToList();
         }
 
-        /*public async Task<bool> IsGroupActive(ObjectId groupId)
+        public async Task<bool> IsGroupActive(ObjectId groupId)
         {
             return await _groups.IsGroupActive(groupId); 
         }
@@ -160,6 +130,6 @@ namespace ModelAbstractions
         public async Task SetGroupState(ObjectId groupId)
         {
             await _groups.SetGroupState(groupId, State.Passive);
-        }*/
+        }
     }
 }

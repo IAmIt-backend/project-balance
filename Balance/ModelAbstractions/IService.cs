@@ -11,7 +11,6 @@ namespace ModelAbstractions
 {
     public interface IService
     {
-        //Task<User> GetUser(string email);
         Task AddPayment(ObjectId groupId, decimal value, ObjectId userId);
         Task<ICollection<PaymentListItemModel>> GetAllPayments(ObjectId groupId);
 
@@ -27,7 +26,7 @@ namespace ModelAbstractions
         Task RejectInvitation(ObjectId userId, ObjectId groupId);
         Task<ICollection<AddGroupModel>> GetAllInvitations(ObjectId userId);
 
-        //Task<bool> IsGroupActive(ObjectId groupId);
-        //Task SetGroupState(ObjectId groupId);
+        Task<bool> IsGroupActive(ObjectId groupId);
+        Task SetGroupState(ObjectId groupId);
     }
 }

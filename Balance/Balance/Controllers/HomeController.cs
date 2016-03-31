@@ -34,6 +34,7 @@ namespace Balance.Controllers
         [HttpPost]
         public async Task<ActionResult> AddGroup(AddGroupModel model)
         {
+            
             if (string.IsNullOrEmpty(model.Name) || string.IsNullOrEmpty(model.Description))
             {
                 ModelState.AddModelError("", "Fill all fields");
@@ -42,7 +43,15 @@ namespace Balance.Controllers
             }
             else
             {
-                await _godService.AddGroup(model, new ObjectId(User.Identity.GetUserId()));
+                try
+                {
+                    await _godService.AddGroup(model, new ObjectId(User.Identity.GetUserId()));
+                }
+                catch (Exception e)
+                {
+                    ModelState.AddModelError("", "Try to create group again");
+                    return View(new AddGroupViewModel { Description = model.Description, Name = model.Name });
+                }
                 return RedirectToAction("Index");
             }
         }
@@ -94,6 +103,12 @@ namespace Balance.Controllers
                 ModelState.AddModelError("", "Invalid value");
                 return View(new PaymentViewModel { Value = model.Value });
             }
+            if (!await _godService.IsGroupActive(id))
+            {
+                ModelState.AddModelError("", "This group is passive. You can not add payment");
+                return View(new PaymentViewModel { Value = model.Value });
+            }
+
             else
             {
                 var userId = new ObjectId(User.Identity.GetUserId());
@@ -106,22 +121,40 @@ namespace Balance.Controllers
         public async Task<ActionResult> AddUserToGroup(string id, AddUserToGroupModel model)
         {
             var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            var user = manager.FindByEmail(model.Email);
-            if (string.IsNullOrEmpty(model.Email) || user == null)
+            if (!await _godService.IsGroupActive(new ObjectId(id)))
+            {
+                ModelState.AddModelError("", "This group is passive. You can not add payment");
+                return View(new AddUserToGroupViewModel { Email = model.Email });
+            }
+            if (string.IsNullOrEmpty(model.Email))
             {
                 ModelState.AddModelError("", "Invalid email");
-                return View(new AddUserToGroupViewModel {Email = model.Email});
+                return View(new AddUserToGroupViewModel { Email = model.Email });
             }
-            else if (! await _godService.IsUserAdministrator(new ObjectId(User.Identity.GetUserId()), new ObjectId(id)))
+            var user = manager.FindByEmail(model.Email);
+            if (user == null || string.IsNullOrEmpty(model.Email))
+            {
+                ModelState.AddModelError("", "Invalid email");
+                return View(new AddUserToGroupViewModel { Email = model.Email });
+            }
+            if (! await _godService.IsUserAdministrator(new ObjectId(User.Identity.GetUserId()), new ObjectId(id)))
             {
                 ModelState.AddModelError("", "You are not administrator");
                 return View(new AddUserToGroupViewModel { Email = model.Email });
             }
             else
             {
-                await _godService.AddUserToGroup(
-                    new ObjectId(
-                        user.Id), new ObjectId(id));
+                try
+                {
+                    await _godService.AddUserToGroup(
+                        new ObjectId(
+                            user.Id), new ObjectId(id));
+                }
+                catch
+                {
+                    ModelState.AddModelError("", "This user is already in group");
+                    return View(new AddUserToGroupViewModel { Email = model.Email });
+                }
                 return RedirectToAction("Group", "Home", new {Id = id});
             }
         }
@@ -135,6 +168,12 @@ namespace Balance.Controllers
         public async Task<ActionResult> Count(string id)
         {
             var payments = (await _godService.GetAllPayments(new ObjectId(id))).GroupBy(u => u.Id);
+            if (!payments.Select(p => p.Key).Contains(new ObjectId(User.Identity.GetUserId())))
+            {
+                ModelState.AddModelError("", "Add payment and then try to click count");
+                return View(new CountViewModel {Id = "", Credits = new List<CreditModel>(), Type = ""});
+            }
+
             var values = payments.Select(g => new CountListItemModel {Id = g.Key, Value = g.ToList().Select(a => a.Value).Sum()}).ToList();
             var constant = values.Select(v => v.Value).Sum()/values.Count();
             var newValues = values.Select(v => new CountListItemModel {Id = v.Id, Value = v.Value - constant}).ToList();
@@ -251,7 +290,7 @@ namespace Balance.Controllers
                     viewModel.Type = "Your creditors";
                 }
             }
-
+            await _godService.SetGroupState(new ObjectId(id));
             return View(viewModel);
         }
     }

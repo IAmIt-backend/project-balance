@@ -2,6 +2,7 @@
 @{
     ViewBag.Title = "Count";
 }
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
 <p>
     <h3><label class="label label-default">@Model.Type</label></h3>
 </p>

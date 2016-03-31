@@ -68,16 +68,16 @@ namespace MongoDB
             return (await _groups.Find(g => g.Id == groupId).FirstOrDefaultAsync()).Payments.FirstOrDefault(p => p.UserId == userId);
         }
 
-        /*public async Task<bool> IsGroupActive(ObjectId groupId)
+        public async Task<bool> IsGroupActive(ObjectId groupId)
         {
             return (await _groups.Find(g => g.Id == groupId).FirstOrDefaultAsync()).State == State.Active;
-        }*/
+        }
 
-        /*public async Task SetGroupState(ObjectId groupId, Group.State state)
+        public async Task SetGroupState(ObjectId groupId, State state)
         {
             var update = new ObjectUpdateDefinition<Group>(new object());
             await _groups.UpdateOneAsync(g => g.Id == groupId, update.Set(g => g.State, state));
-        }*/
+        }
 
     }
 }
