@@ -123,7 +123,7 @@ namespace ModelAbstractions
         public async Task<ICollection<ObjectId>> GetAllUsersInGroup(ObjectId groupId)
         {
             var users = await _groups.GetAllUsersInGroup(groupId);
-            return users.ToList();
+            return users.ToList(); 
         }
 
 
