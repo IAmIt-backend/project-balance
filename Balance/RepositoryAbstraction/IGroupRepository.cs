@@ -17,6 +17,7 @@ namespace RepositoryAbstraction
         Task<Group> GetGroup(ObjectId id);
         Task<ICollection<Payment>> GetAllPayments(ObjectId groupId);
         Task<Payment> GetPayment(ObjectId groupId, ObjectId userId);
-        Task<Payment> SetPayment(ObjectId groupId, ObjectId userId, decimal Value);
+        //Task<bool> IsGroupActive(ObjectId groupId);
+        //Task SetGroupState(ObjectId groupId, Group.State state);
     }
 }
