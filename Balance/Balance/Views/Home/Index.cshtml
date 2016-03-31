@@ -3,9 +3,10 @@
     ViewBag.Title = "Balance";
 }
 <p>
-    @Html.ActionLink("Add Group", "AddGroup")
+    <h2><label class="label label-info">@Html.ActionLink("Add Group", "AddGroup")</label></h2>
 </p>
-
-@foreach(var group in Model.Groups){
-<p>@Html.ActionLink(group.Name, "Group", new { Id = group.Id.ToString() })</p>
+<br />
+@foreach (var group in Model.Groups)
+{
+    <p><h3><label class="label label-warning">@Html.ActionLink(group.Name, "Group", new { Id = group.Id.ToString() })</label></h3></p>
 }
