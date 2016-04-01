@@ -4,14 +4,16 @@ using MVCModels.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Converter;
 
 namespace ModelAbstractions
 {
     public interface IService
     {
-        Task AddPayment(ObjectId groupId, decimal value, ObjectId userId);
+        Task AddPayment(ObjectId groupId, decimal value, ObjectId userId, string type);
         Task<ICollection<PaymentListItemModel>> GetAllPayments(ObjectId groupId);
 
         Task AddGroup(AddGroupModel groupModel, ObjectId userId);

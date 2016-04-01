@@ -9,6 +9,7 @@ namespace MVCModels.Models
 {
     public class PaymentModel
     {
+        public string Type { get; set; }
         [Required]
         public decimal Value { get; set; }
     }

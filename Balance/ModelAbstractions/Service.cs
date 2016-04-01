@@ -37,7 +37,7 @@ namespace ModelAbstractions
             };
             await _groups.AddGroup(group);
             await _groups.AddUserToGroup(Role.Administrator, id, userId);
-            await _groups.AddPayment(id, new Payment {Value = 0, UserId = userId});
+            await _groups.AddPayment(id, new Payment {Value = 0, UserId = userId, CurrencyType = CurrencyType.USD});
 
         }
 
@@ -70,10 +70,10 @@ namespace ModelAbstractions
             return new AddGroupModel { Name = group.Name, Description = group.Description };
         }
 
-        public async Task AddPayment(ObjectId groupId, decimal value, ObjectId userId)
+        public async Task AddPayment(ObjectId groupId, decimal value, ObjectId userId, string type)
         {
             var group = await _groups.GetGroup(groupId);
-            await _groups.AddPayment(groupId, new Payment { UserId = userId, Value = value, CurrencyType = CurrencyType.USD});
+            await _groups.AddPayment(groupId, new Payment { UserId = userId, Value = value, CurrencyType = type});
         }
 
 
@@ -85,7 +85,7 @@ namespace ModelAbstractions
             {
                 throw new Exception("Такой группы не существует");
             }
-            return payments.Select(p => new PaymentListItemModel { Id = p.UserId, Value = p.Value }).ToList();
+            return payments.Select(p => new PaymentListItemModel { Id = p.UserId, Value = p.Value, Type = p.CurrencyType }).ToList();
 
         }
 

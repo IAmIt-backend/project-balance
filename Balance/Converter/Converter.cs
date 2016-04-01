@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 
 namespace Converter
 {
-    public static class CurrencyType
+    public class CurrencyType
     {
         public readonly static string USD = "USD";
         public readonly static string EUR = "EUR";

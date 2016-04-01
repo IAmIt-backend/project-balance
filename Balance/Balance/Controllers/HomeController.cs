@@ -9,6 +9,7 @@ using System.Web.WebPages.Instrumentation;
 using Balance.Models;
 using MongoDB.Bson;
 using System.Web.Services.Description;
+using Converter;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using MVCModels.Models;
@@ -89,30 +90,32 @@ namespace Balance.Controllers
                 Name = manager.FindById(l.ToString()).UserName
             }).ToList();
 
-            var payments =
-                falsePayments.Select(
-                    l =>
-                        new PaymentListItemModel
-                        {
-                            Id = l.Id,
-                            Value = l.Value,
-                            UserName = users.First(u => u.Id == l.Id).Name
-                        }).ToList();
+            var payments = 
+                falsePayments.Select(l =>
+                    new PaymentListItemModel
+                    {
+                        Id = l.Id,
+                        Value = l.Value,
+                        UserName = users.First(u => u.Id == l.Id).Name,
+                        Type = l.Type
+                    });
 
-
-            return View(new GroupViewModel {Id = id, Name = group.Name,
+            var newPayments = new List<PaymentListItemModel>(payments);
+            return View(new GroupViewModel
+            {
+                Id = id,
+                Name = group.Name,
                 Description = group.Description,
-                Payments = payments,
-                Sum = payments.Select(p => p.Value).Sum(),
+                Payments = newPayments,
                 Users = users
-        });
+            });
         }
-
 
         [HttpGet]
         public ActionResult Payment()
         {
-            return View();
+                var userId = new ObjectId(User.Identity.GetUserId());
+                return View(new PaymentViewModel {Types = new List<string> { CurrencyType.USD, CurrencyType.CNY, CurrencyType.EUR, CurrencyType.GBP, CurrencyType.JPY, CurrencyType.PLN, CurrencyType.RUB } });
         }
 
         [HttpPost]
@@ -136,7 +139,7 @@ namespace Balance.Controllers
             else
             {
                 var userId = new ObjectId(User.Identity.GetUserId());
-                await _godService.AddPayment(id, model.Value, userId);
+                await _godService.AddPayment(id, model.Value, userId, model.Type);
                 return RedirectToAction("Group", "Home", new {Id = id});
             }
         }
@@ -190,9 +193,22 @@ namespace Balance.Controllers
         [HttpGet]
         public async Task<ActionResult> Count(string id)
         {
-            var payments = (await _godService.GetAllPayments(new ObjectId(id))).GroupBy(u => u.Id);
+            var newPayments = await Task.WhenAll((await _godService.GetAllPayments(new ObjectId(id))).Select(async g => new PaymentListItemModel
+            {
+                Id = g.Id,
+                UserName = g.UserName,
+                Value = await Converter.Converter.Convert(g.Type, CurrencyType.USD, g.Value),
+                Type = CurrencyType.USD
+            }));
 
-            var values = payments.Select(g => new CountListItemModel {Id = g.Key, Value = g.ToList().Select(a => a.Value).Sum()}).ToList();
+            var payments = new List<PaymentListItemModel>(newPayments).GroupBy(u => u.Id);
+            var falseValues = payments.Select(g => new CountListItemModel
+            {
+                Id = g.Key,
+                Value = g.ToList().Select(a => a.Value).Sum()
+            });
+            var values = new List<CountListItemModel>(falseValues);
+
             var constant = values.Select(v => v.Value).Sum()/values.Count();
             var newValues = values.Select(v => new CountListItemModel {Id = v.Id, Value = v.Value - constant}).ToList();
 
@@ -200,7 +216,10 @@ namespace Balance.Controllers
             var pluses = new Queue<CountListItemModel>(newValues.Where(v => v.Value > 0));
 
             var zeroes = newValues.Where(v => v.Value == 0).ToList();
-            var viewModel = new CountViewModel { Id = id, Credits = new List<CreditModel>(), Type = ""};
+            var viewModel = new CountViewModel { Id = id, Credits = new List<CreditModel>(), Type = "", Types = new List<string>
+            {
+                 CurrencyType.USD, CurrencyType.CNY, CurrencyType.EUR, CurrencyType.GBP, CurrencyType.JPY, CurrencyType.PLN, CurrencyType.RUB
+            } };
             if (zeroes.Select(z => z.Id).Contains(new ObjectId(User.Identity.GetUserId())))
             {
                 return View(viewModel);
@@ -228,7 +247,7 @@ namespace Balance.Controllers
                     }
                 }
                 var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-                while (minuses.Peek().Value < 0)
+                while (minuses.Peek().Value <= -1)
                 {
                     if (Math.Abs(minuses.Peek().Value) >= pluses.Peek().Value)
                     {
@@ -276,7 +295,148 @@ namespace Balance.Controllers
                         }
                     }
                     var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-                    while (pluses.Peek().Value > 0)
+                    while (pluses.Peek().Value >= 1)
+                    {
+                        if (pluses.Peek().Value >= Math.Abs(minuses.Peek().Value))
+                        {
+                            viewModel.Credits.Add(new CreditModel
+                            {
+                                Credit = Math.Abs(minuses.Peek().Value),
+                                Name = manager.FindById(minuses.Peek().Id.ToString()).UserName
+                            });
+                            pluses.Peek().Value += minuses.Peek().Value;
+                            minuses.Dequeue();
+                        }
+                        else if (pluses.Peek().Value < Math.Abs(minuses.Peek().Value))
+                        {
+                            viewModel.Credits.Add(new CreditModel
+                            {
+                                Credit = pluses.Peek().Value,
+                                Name = manager.FindById(minuses.Peek().Id.ToString()).UserName
+                            });
+                            pluses.Peek().Value += minuses.Peek().Value;
+                        }
+                    }
+                    viewModel.Type = "Your creditors";
+                }
+            }
+            //await _godService.SetGroupState(new ObjectId(id));
+            return View(viewModel);
+        }
+        
+        
+        [HttpPost]
+        public async Task<ActionResult> Count(string id, CountViewModel model)
+        {
+            var newPayments = await Task.WhenAll((await _godService.GetAllPayments(new ObjectId(id))).Select(async g => new PaymentListItemModel
+            {
+                Id = g.Id,
+                UserName = g.UserName,
+                Value = await Converter.Converter.Convert(g.Type, model.Type, g.Value),
+                Type = CurrencyType.USD
+            }));
+
+            var payments = new List<PaymentListItemModel>(newPayments).GroupBy(u => u.Id);
+            var falseValues = payments.Select(g => new CountListItemModel
+            {
+                Id = g.Key,
+                Value = g.ToList().Select(a => a.Value).Sum()
+            });
+            var values = new List<CountListItemModel>(falseValues);
+
+            var constant = values.Select(v => v.Value).Sum() / values.Count();
+            var newValues = values.Select(v => new CountListItemModel { Id = v.Id, Value = v.Value - constant }).ToList();
+
+            var minuses = new Queue<CountListItemModel>(newValues.Where(v => v.Value < 0));
+            var pluses = new Queue<CountListItemModel>(newValues.Where(v => v.Value > 0));
+
+            var zeroes = newValues.Where(v => v.Value == 0).ToList();
+            var viewModel = new CountViewModel
+            {
+                Id = id,
+                Credits = new List<CreditModel>(),
+                Type = "",
+                Types = new List<string>
+            {
+                 CurrencyType.USD, CurrencyType.CNY, CurrencyType.EUR, CurrencyType.GBP, CurrencyType.JPY, CurrencyType.PLN, CurrencyType.RUB
+            }
+            };
+            if (zeroes.Select(z => z.Id).Contains(new ObjectId(User.Identity.GetUserId())))
+            {
+                return View(viewModel);
+            }
+            var currentUser = minuses.FirstOrDefault(m => m.Id == new ObjectId(User.Identity.GetUserId()));
+            if (currentUser != null)
+            {
+                //he is debtor
+                while (minuses.Peek() != currentUser)
+                {
+                    if (Math.Abs(minuses.Peek().Value) > pluses.Peek().Value)
+                    {
+                        minuses.Peek().Value += pluses.Peek().Value;
+                        pluses.Dequeue();
+                    }
+                    else if (Math.Abs(minuses.Peek().Value) < pluses.Peek().Value)
+                    {
+                        pluses.Peek().Value += minuses.Peek().Value;
+                        minuses.Dequeue();
+                    }
+                    else if (Math.Abs(minuses.Peek().Value) == pluses.Peek().Value)
+                    {
+                        minuses.Dequeue();
+                        pluses.Dequeue();
+                    }
+                }
+                var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+                while (minuses.Peek().Value <= -1)
+                {
+                    if (Math.Abs(minuses.Peek().Value) >= pluses.Peek().Value)
+                    {
+                        viewModel.Credits.Add(new CreditModel
+                        {
+                            Credit = pluses.Peek().Value,
+                            Name = manager.FindById(pluses.Peek().Id.ToString()).UserName
+                        });
+                        minuses.Peek().Value += pluses.Peek().Value;
+                        pluses.Dequeue();
+                    }
+                    else if (Math.Abs(minuses.Peek().Value) < pluses.Peek().Value)
+                    {
+                        viewModel.Credits.Add(new CreditModel
+                        {
+                            Credit = Math.Abs(minuses.Peek().Value),
+                            Name = manager.FindById(pluses.Peek().Id.ToString()).UserName
+                        });
+                        minuses.Peek().Value += pluses.Peek().Value;
+                    }
+                }
+                viewModel.Type = "Your credits";
+            }
+            else
+            {
+                {
+                    //he is creditor
+                    var currentPlusUser = pluses.FirstOrDefault(m => m.Id == new ObjectId(User.Identity.GetUserId()));
+                    while (pluses.Peek().Id != currentPlusUser.Id)
+                    {
+                        if (Math.Abs(minuses.Peek().Value) > pluses.Peek().Value)
+                        {
+                            minuses.Peek().Value += pluses.Peek().Value;
+                            pluses.Dequeue();
+                        }
+                        else if (Math.Abs(minuses.Peek().Value) < pluses.Peek().Value)
+                        {
+                            pluses.Peek().Value += minuses.Peek().Value;
+                            minuses.Dequeue();
+                        }
+                        else if (Math.Abs(minuses.Peek().Value) == pluses.Peek().Value)
+                        {
+                            minuses.Dequeue();
+                            pluses.Dequeue();
+                        }
+                    }
+                    var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+                    while (pluses.Peek().Value >= 1)
                     {
                         if (pluses.Peek().Value >= Math.Abs(minuses.Peek().Value))
                         {
