@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.ComponentModel.DataAnnotations;
+using System.Text;
+using System.Threading.Tasks;
 using MongoDB.Bson;
 
 namespace MVCModels.Models
 {
-    public class PaymentModel
+    public class CountListItemModel
     {
-        [Required]
+        public ObjectId Id { get; set; }
         public decimal Value { get; set; }
     }
 }

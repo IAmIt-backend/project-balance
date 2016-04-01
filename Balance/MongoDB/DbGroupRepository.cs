@@ -40,7 +40,8 @@ namespace MongoDB
             await _memberships.InsertOneAsync(new UserGroupMembership {
                     MemberType = memberType,
                     UserId = userId,
-                    GroupId = groupId
+                    GroupId = groupId,
+                    IsVerified = false
                 });
             
         }
@@ -53,7 +54,7 @@ namespace MongoDB
 
         public async Task<ICollection<ObjectId>> GetAllUsersInGroup(ObjectId groupId)
         {
-            return  (await _memberships.FindAsync(m => m.GroupId == groupId)).ToList().Select(m => m.UserId).ToList();
+            return  (await _memberships.FindAsync(m => m.GroupId == groupId /*&& m.IsVerified*/)).ToList().Select(m => m.UserId).ToList();
         }
 
         public async Task<Group> GetGroup(ObjectId id)
@@ -67,9 +68,16 @@ namespace MongoDB
             return (await _groups.Find(g => g.Id == groupId).FirstOrDefaultAsync()).Payments.FirstOrDefault(p => p.UserId == userId);
         }
 
-        public async Task<Payment> SetPayment(ObjectId groupId, ObjectId userId, decimal Value)
+        public async Task<bool> IsGroupActive(ObjectId groupId)
         {
-            throw new NotImplementedException();
+            return (await _groups.Find(g => g.Id == groupId).FirstOrDefaultAsync()).State == State.Active;
         }
+
+        public async Task SetGroupState(ObjectId groupId, State state)
+        {
+            var update = new ObjectUpdateDefinition<Group>(new object());
+            await _groups.UpdateOneAsync(g => g.Id == groupId, update.Set(g => g.State, state));
+        }
+
     }
 }

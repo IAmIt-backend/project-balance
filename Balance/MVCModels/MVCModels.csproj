@@ -43,6 +43,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -54,6 +55,9 @@
   <ItemGroup>
     <Compile Include="Models\AddGroupModel.cs" />
     <Compile Include="Models\AddUserToGroupModel.cs" />
+    <Compile Include="Models\CountListItemModel.cs" />
+    <Compile Include="Models\CountModel.cs" />
+    <Compile Include="Models\CreditModel.cs" />
     <Compile Include="Models\GroupListItemModel.cs" />
     <Compile Include="Models\GroupModel.cs" />
     <Compile Include="Models\IndexModel.cs" />

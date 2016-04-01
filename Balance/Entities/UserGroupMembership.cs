@@ -19,6 +19,7 @@ namespace Entities
         public ObjectId GroupId { get; set; }
         public ObjectId UserId { get; set; }
         public  Role MemberType { get; set; }
+        public bool IsVerified { get; set; }
         
     }
 }

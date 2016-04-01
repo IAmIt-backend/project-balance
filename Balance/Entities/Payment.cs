@@ -11,5 +11,6 @@ namespace Entities
     {
         public ObjectId UserId { get; set; }
         public decimal Value { get; set; }
+        public string CurrencyType { get; set; }
     }
 }

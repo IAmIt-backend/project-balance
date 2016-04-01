@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Converter;
 
 namespace ModelAbstractions
 {
@@ -31,10 +32,12 @@ namespace ModelAbstractions
                 Id = id,
                 Name = groupModel.Name,
                 Description = groupModel.Description,
-                Payments = new List<Payment>()
+                Payments = new List<Payment>(),
+                State = State.Active
             };
             await _groups.AddGroup(group);
             await _groups.AddUserToGroup(Role.Administrator, userId, id);
+            await _groups.AddPayment(id, new Payment {Value = 0, UserId = userId});
 
         }
 
@@ -49,14 +52,10 @@ namespace ModelAbstractions
             else
             {
                 await _groups.AddUserToGroup(Role.Member, userId, groupId);
+                await _groups.AddPayment(groupId, new Payment { Value = 0, UserId = userId });
             }
 
         }
-
-
-
-
-
 
 
 
@@ -71,40 +70,10 @@ namespace ModelAbstractions
             return new AddGroupModel { Name = group.Name, Description = group.Description };
         }
 
-
-
-
-        /*public async Task<User> GetUser(string email)
-        {
-            var users = await _users.GetAllUsers();
-            if (email == null)
-            {
-                throw new Exception("Неверный email");
-            }
-            return user;
-
-
-        }*/
-
-
-
         public async Task AddPayment(ObjectId groupId, decimal value, ObjectId userId)
         {
             var group = await _groups.GetGroup(groupId);
-            //var users = await _users.GetAllUsers();
-            if (group == null)
-            {
-                throw new Exception("Такой группы не существует");
-            }
-            else if (value <= 0)
-            {
-                throw new Exception("Нельзя внести отрицательную или нулевую сумму");
-            }
-            /* else if (!users.Contains<string>(email))
-             {
-                 throw new Exception("Такого пользователя не существует");
-             }*/
-            await _groups.AddPayment(groupId, new Payment { UserId = userId, Value = value });
+            await _groups.AddPayment(groupId, new Payment { UserId = userId, Value = value, CurrencyType = CurrencyType.USD});
         }
 
 
@@ -123,13 +92,13 @@ namespace ModelAbstractions
         public async Task<ICollection<ObjectId>> GetAllUsersInGroup(ObjectId groupId)
         {
             var users = await _groups.GetAllUsersInGroup(groupId);
-            return users.ToList();
+            return users.ToList(); 
         }
 
 
         public async Task<ICollection<GroupListItemModel>> GetAllGroupsOfUser(ObjectId userId)
         {
-            var groups = await _users.GetAllGroupsOfUser(userId);
+            var groups = (await _users.GetAllGroupsOfUser(userId));
             return groups.Select(g => new GroupListItemModel { Id = g.Id, Name = g.Name }).ToList();
         }
 
@@ -138,6 +107,32 @@ namespace ModelAbstractions
         {
             var role = await _users.IsUserAdministrator(userId, groupId);
             return role;
+        }
+
+        public async Task VerifyInvitation(ObjectId userId, ObjectId groupId)
+        {
+            await _users.VerifyInvitation(userId, groupId);
+        }
+
+        public async Task RejectInvitation(ObjectId userId, ObjectId groupId)
+        {
+            await _users.RejectInvitation(userId, groupId);
+        }
+
+        public async Task<ICollection<AddGroupModel>> GetAllInvitations(ObjectId userId)
+        {
+           return (await _users.GetAllInvitations(userId))
+                .Select(g => new AddGroupModel {Name = g.Name, Description = g.Description }).ToList();
+        }
+
+        public async Task<bool> IsGroupActive(ObjectId groupId)
+        {
+            return await _groups.IsGroupActive(groupId); 
+        }
+
+        public async Task SetGroupState(ObjectId groupId)
+        {
+            await _groups.SetGroupState(groupId, State.Passive);
         }
     }
 }
