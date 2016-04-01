@@ -11,8 +11,9 @@ namespace RepositoryAbstraction
     public interface IUserRepository
     {
         Task<ICollection<Group>> GetAllGroupsOfUser(ObjectId userId);
-        Task<bool> IsUserAdministrator(ObjectId userId, ObjectId groupId);
-        Task<bool> IsUserInGroup(ObjectId userId, ObjectId groupId);
+        Task<bool> IsUserAdministrator(ObjectId groupId, ObjectId userId);
+        Task<bool> IsUserInGroup(ObjectId groupId, ObjectId userId);
+        Task<bool> IsUserInvitedInGroup(ObjectId groupId, ObjectId userId);
         Task VerifyInvitation(ObjectId groupId, ObjectId userId);
         Task RejectInvitation(ObjectId groupId, ObjectId userId);
         Task<ICollection<Group>> GetAllInvitations(ObjectId userId);

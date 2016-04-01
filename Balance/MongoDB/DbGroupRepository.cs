@@ -35,13 +35,13 @@ namespace MongoDB
             await _groups.UpdateOneAsync(g => g.Id == groupId, update.Set(g => g.Payments, payments));
         }
 
-        public async Task AddUserToGroup(Role memberType, ObjectId userId, ObjectId groupId)
+        public async Task AddUserToGroup(Role memberType, ObjectId groupId, ObjectId userId)
         {
             await _memberships.InsertOneAsync(new UserGroupMembership {
                     MemberType = memberType,
                     UserId = userId,
                     GroupId = groupId,
-                    IsVerified = false
+                    IsVerified = (memberType == Role.Administrator)
                 });
             
         }
@@ -54,7 +54,7 @@ namespace MongoDB
 
         public async Task<ICollection<ObjectId>> GetAllUsersInGroup(ObjectId groupId)
         {
-            return  (await _memberships.FindAsync(m => m.GroupId == groupId /*&& m.IsVerified*/)).ToList().Select(m => m.UserId).ToList();
+            return  (await _memberships.FindAsync(m => m.GroupId == groupId && m.IsVerified)).ToList().Select(m => m.UserId).ToList();
         }
 
         public async Task<Group> GetGroup(ObjectId id)
