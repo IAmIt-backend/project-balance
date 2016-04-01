@@ -57,6 +57,10 @@
     <Compile Include="Service.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Converter\Converter.csproj">
+      <Project>{9aedb7e8-d2cd-4779-9dc8-6c9a549dcf41}</Project>
+      <Name>Converter</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Entities\Entities.csproj">
       <Project>{49c11c4f-ce86-4c0f-bc7b-b68d690cda25}</Project>
       <Name>Entities</Name>

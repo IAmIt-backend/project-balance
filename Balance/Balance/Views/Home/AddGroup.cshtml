@@ -8,6 +8,7 @@
         <div class="form-group">
             <h3><label class="label label-default">Name: </label></h3>
             <input type="text" class="form-control" name="name" placeholder="Enter Name">
+            @Html.ValidationMessageFor(m => m.Name, "", new { @class = "text-danger" })
         </div>
     </p>
 
@@ -15,6 +16,7 @@
         <div class="form-group">
             <h3><label class="label label-default">Description: </label></h3>
             <input type="text" class="form-control" name="description" placeholder="Enter Description">
+            @Html.ValidationMessageFor(m => m.Description, "", new { @class = "text-danger" })
             </div>
 </p>
 

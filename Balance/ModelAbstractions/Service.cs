@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Converter;
 
 namespace ModelAbstractions
 {
@@ -36,6 +37,7 @@ namespace ModelAbstractions
             };
             await _groups.AddGroup(group);
             await _groups.AddUserToGroup(Role.Administrator, userId, id);
+            await _groups.AddPayment(id, new Payment {Value = 0, UserId = userId});
 
         }
 
@@ -50,6 +52,7 @@ namespace ModelAbstractions
             else
             {
                 await _groups.AddUserToGroup(Role.Member, userId, groupId);
+                await _groups.AddPayment(groupId, new Payment { Value = 0, UserId = userId });
             }
 
         }
@@ -70,7 +73,7 @@ namespace ModelAbstractions
         public async Task AddPayment(ObjectId groupId, decimal value, ObjectId userId)
         {
             var group = await _groups.GetGroup(groupId);
-            await _groups.AddPayment(groupId, new Payment { UserId = userId, Value = value });
+            await _groups.AddPayment(groupId, new Payment { UserId = userId, Value = value, CurrencyType = CurrencyType.USD});
         }
 
 

@@ -1,15 +1,12 @@
-﻿using MongoDB.Bson;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Web;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace MVCModels.Models
 {
     public class AddGroupModel
     {
+        [Required]
         public string Name { get; set; }
+        [Required]
         public string Description { get; set; }
     }
 }

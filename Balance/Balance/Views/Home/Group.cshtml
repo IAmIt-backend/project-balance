@@ -33,8 +33,10 @@
     <tr><td><b>Total</b></td> <td>@Model.Sum</td></tr>
     @foreach (var payment in Model.Payments)
     {
-        <tr><td>@payment.UserName</td><td>@payment.Value</td></tr>
-
+        if (payment.Value != 0)
+        {
+            <tr><td>@payment.UserName</td><td>@payment.Value</td></tr>
+        }
     }
 </table>
 <p>

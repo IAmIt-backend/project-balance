@@ -35,9 +35,8 @@ namespace Balance.Controllers
         public async Task<ActionResult> AddGroup(AddGroupModel model)
         {
             
-            if (string.IsNullOrEmpty(model.Name) || string.IsNullOrEmpty(model.Description))
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Fill all fields");
                 return
                     View(new AddGroupViewModel {Description = model.Description, Name = model.Name});
             }
@@ -98,7 +97,11 @@ namespace Balance.Controllers
         [HttpPost]
         public async Task<ActionResult> Payment(ObjectId id ,PaymentModel model)
         {
-            if (model.Value <= 0)
+            if (!ModelState.IsValid)
+            {
+                return View(new PaymentViewModel { Value = model.Value });
+            }
+            if (model.Value < 0)
             {
                 ModelState.AddModelError("", "Invalid value");
                 return View(new PaymentViewModel { Value = model.Value });
@@ -123,16 +126,15 @@ namespace Balance.Controllers
             var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
             if (!await _godService.IsGroupActive(new ObjectId(id)))
             {
-                ModelState.AddModelError("", "This group is passive. You can not add payment");
+                ModelState.AddModelError("", "This group is passive. You can not add user");
                 return View(new AddUserToGroupViewModel { Email = model.Email });
             }
-            if (string.IsNullOrEmpty(model.Email))
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("", "Invalid email");
                 return View(new AddUserToGroupViewModel { Email = model.Email });
             }
             var user = manager.FindByEmail(model.Email);
-            if (user == null || string.IsNullOrEmpty(model.Email))
+            if (user == null)
             {
                 ModelState.AddModelError("", "Invalid email");
                 return View(new AddUserToGroupViewModel { Email = model.Email });
@@ -150,9 +152,9 @@ namespace Balance.Controllers
                         new ObjectId(
                             user.Id), new ObjectId(id));
                 }
-                catch
+                catch (Exception e)
                 {
-                    ModelState.AddModelError("", "This user is already in group");
+                    ModelState.AddModelError("", e.Message);
                     return View(new AddUserToGroupViewModel { Email = model.Email });
                 }
                 return RedirectToAction("Group", "Home", new {Id = id});
@@ -168,75 +170,63 @@ namespace Balance.Controllers
         public async Task<ActionResult> Count(string id)
         {
             var payments = (await _godService.GetAllPayments(new ObjectId(id))).GroupBy(u => u.Id);
-            if (!payments.Select(p => p.Key).Contains(new ObjectId(User.Identity.GetUserId())))
-            {
-                ModelState.AddModelError("", "Add payment and then try to click count");
-                return View(new CountViewModel {Id = "", Credits = new List<CreditModel>(), Type = ""});
-            }
 
             var values = payments.Select(g => new CountListItemModel {Id = g.Key, Value = g.ToList().Select(a => a.Value).Sum()}).ToList();
             var constant = values.Select(v => v.Value).Sum()/values.Count();
             var newValues = values.Select(v => new CountListItemModel {Id = v.Id, Value = v.Value - constant}).ToList();
 
-            var minuses = new List<CountListItemModel>();
-            var pluses = new List<CountListItemModel>();
+            var minuses = new Queue<CountListItemModel>(newValues.Where(v => v.Value < 0));
+            var pluses = new Queue<CountListItemModel>(newValues.Where(v => v.Value > 0));
 
-            for (int t = 0; t < values.Count(); t++)
-            {
-                var value = newValues.ElementAt(t);
-                if (value.Value > 0)
-                {
-                    pluses.Add(value);
-                }
-                else
-                {
-                    minuses.Add(value);
-                }
-            }
+            var zeroes = newValues.Where(v => v.Value == 0).ToList();
             var viewModel = new CountViewModel { Id = id, Credits = new List<CreditModel>(), Type = ""};
+            if (zeroes.Select(z => z.Id).Contains(new ObjectId(User.Identity.GetUserId())))
+            {
+                return View(viewModel);
+            }
             var currentUser = minuses.FirstOrDefault(m => m.Id == new ObjectId(User.Identity.GetUserId()));
             if (currentUser != null)
             {
                 //he is debtor
-                while (minuses.ElementAt(0) != currentUser)
+                while (minuses.Peek() != currentUser)
                 {
-                    if (Math.Abs(minuses.ElementAt(0).Value) > pluses.ElementAt(0).Value)
+                    if (Math.Abs(minuses.Peek().Value) > pluses.Peek().Value)
                     {
-                        minuses.ElementAt(0).Value += pluses.ElementAt(0).Value;
-                        pluses.RemoveAt(0);
+                        minuses.Peek().Value += pluses.Peek().Value;
+                        pluses.Dequeue();
                     }
-                    else if (Math.Abs(minuses.ElementAt(0).Value) < pluses.ElementAt(0).Value)
+                    else if (Math.Abs(minuses.Peek().Value) < pluses.Peek().Value)
                     {
-                        pluses.ElementAt(0).Value += minuses.ElementAt(0).Value;
-                        minuses.RemoveAt(0);
+                        pluses.Peek().Value += minuses.Peek().Value;
+                        minuses.Dequeue();
                     }
-                    else if (Math.Abs(minuses.ElementAt(0).Value) == pluses.ElementAt(0).Value)
+                    else if (Math.Abs(minuses.Peek().Value) == pluses.Peek().Value)
                     {
-                        minuses.RemoveAt(0);
-                        pluses.RemoveAt(0);
+                        minuses.Dequeue();
+                        pluses.Dequeue();
                     }
                 }
                 var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-                while (minuses.ElementAt(0).Value < 0)
+                while (minuses.Peek().Value < 0)
                 {
-                    if (Math.Abs(minuses.ElementAt(0).Value) >= pluses.ElementAt(0).Value)
+                    if (Math.Abs(minuses.Peek().Value) >= pluses.Peek().Value)
                     {
                         viewModel.Credits.Add(new CreditModel
                         {
-                            Credit = pluses.ElementAt(0).Value,
-                            Name = manager.FindById(pluses.ElementAt(0).Id.ToString()).UserName
+                            Credit = pluses.Peek().Value,
+                            Name = manager.FindById(pluses.Peek().Id.ToString()).UserName
                         });
-                        minuses.ElementAt(0).Value += pluses.ElementAt(0).Value;
-                        pluses.RemoveAt(0);
+                        minuses.Peek().Value += pluses.Peek().Value;
+                        pluses.Dequeue();
                     }
-                    else if (Math.Abs(minuses.ElementAt(0).Value) < pluses.ElementAt(0).Value)
+                    else if (Math.Abs(minuses.Peek().Value) < pluses.Peek().Value)
                     {
                         viewModel.Credits.Add(new CreditModel
                         {
-                            Credit = Math.Abs(minuses.ElementAt(0).Value),
-                            Name = manager.FindById(pluses.ElementAt(0).Id.ToString()).UserName
+                            Credit = Math.Abs(minuses.Peek().Value),
+                            Name = manager.FindById(pluses.Peek().Id.ToString()).UserName
                         });
-                        minuses.ElementAt(0).Value += pluses.ElementAt(0).Value;
+                        minuses.Peek().Value += pluses.Peek().Value;
                     }
                 }
                 viewModel.Type = "Your credits";
@@ -246,51 +236,51 @@ namespace Balance.Controllers
                 {
                     //he is creditor
                     var currentPlusUser = pluses.FirstOrDefault(m => m.Id == new ObjectId(User.Identity.GetUserId()));
-                    while (pluses.ElementAt(0).Id != currentPlusUser.Id)
+                    while (pluses.Peek().Id != currentPlusUser.Id)
                     {
-                        if (Math.Abs(minuses.ElementAt(0).Value) > pluses.ElementAt(0).Value)
+                        if (Math.Abs(minuses.Peek().Value) > pluses.Peek().Value)
                         {
-                            minuses.ElementAt(0).Value += pluses.ElementAt(0).Value;
-                            pluses.RemoveAt(0);
+                            minuses.Peek().Value += pluses.Peek().Value;
+                            pluses.Dequeue();
                         }
-                        else if (Math.Abs(minuses.ElementAt(0).Value) < pluses.ElementAt(0).Value)
+                        else if (Math.Abs(minuses.Peek().Value) < pluses.Peek().Value)
                         {
-                            pluses.ElementAt(0).Value += minuses.ElementAt(0).Value;
-                            minuses.RemoveAt(0);
+                            pluses.Peek().Value += minuses.Peek().Value;
+                            minuses.Dequeue();
                         }
-                        else if (Math.Abs(minuses.ElementAt(0).Value) == pluses.ElementAt(0).Value)
+                        else if (Math.Abs(minuses.Peek().Value) == pluses.Peek().Value)
                         {
-                            minuses.RemoveAt(0);
-                            pluses.RemoveAt(0);
+                            minuses.Dequeue();
+                            pluses.Dequeue();
                         }
                     }
                     var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-                    while (pluses.ElementAt(0).Value > 0)
+                    while (pluses.Peek().Value > 0)
                     {
-                        if (pluses.ElementAt(0).Value >= Math.Abs(minuses.ElementAt(0).Value))
+                        if (pluses.Peek().Value >= Math.Abs(minuses.Peek().Value))
                         {
                             viewModel.Credits.Add(new CreditModel
                             {
-                                Credit = Math.Abs(minuses.ElementAt(0).Value),
-                                Name = manager.FindById(minuses.ElementAt(0).Id.ToString()).UserName
+                                Credit = Math.Abs(minuses.Peek().Value),
+                                Name = manager.FindById(minuses.Peek().Id.ToString()).UserName
                             });
-                            pluses.ElementAt(0).Value += minuses.ElementAt(0).Value;
-                            minuses.RemoveAt(0);
+                            pluses.Peek().Value += minuses.Peek().Value;
+                            minuses.Dequeue();
                         }
-                        else if (pluses.ElementAt(0).Value < Math.Abs(minuses.ElementAt(0).Value))
+                        else if (pluses.Peek().Value < Math.Abs(minuses.Peek().Value))
                         {
                             viewModel.Credits.Add(new CreditModel
                             {
-                                Credit = pluses.ElementAt(0).Value,
-                                Name = manager.FindById(minuses.ElementAt(0).Id.ToString()).UserName
+                                Credit = pluses.Peek().Value,
+                                Name = manager.FindById(minuses.Peek().Id.ToString()).UserName
                             });
-                            pluses.ElementAt(0).Value += minuses.ElementAt(0).Value;
+                            pluses.Peek().Value += minuses.Peek().Value;
                         }
                     }
                     viewModel.Type = "Your creditors";
                 }
             }
-            await _godService.SetGroupState(new ObjectId(id));
+            //await _godService.SetGroupState(new ObjectId(id));
             return View(viewModel);
         }
     }

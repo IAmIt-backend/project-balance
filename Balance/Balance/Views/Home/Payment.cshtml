@@ -5,7 +5,8 @@
 <form action="" method="post">
     <p>
         <h3><label class="label label-default">Value: </label></h3>
-        <input type="number" name="value" class="form-control"  placeholder="Enter value">
+        <input type="number" name="value" class="form-control" placeholder="Enter value">
+        @Html.ValidationMessageFor(m => m.Value, "", new { @class = "text-danger" })
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     </p>
     <p>
