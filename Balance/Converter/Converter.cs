@@ -34,7 +34,7 @@ namespace Converter
         private async static Task RefreshRates()
         {
             var curTime = DateTime.Now;
-            if (curTime.Day > dateTime.Day || (curTime.Day <= dateTime.Day && (curTime.Month > dateTime.Month || curTime.Year > dateTime.Year)))
+            if (curTime.Date > dateTime.Date)
             {
                 dateTime = curTime;
                 HttpWebRequest http = (HttpWebRequest)WebRequest.Create("http://www.nbrb.by/Services/XmlExRates.aspx");
