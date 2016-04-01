@@ -114,7 +114,6 @@ namespace Balance.Controllers
         [HttpGet]
         public ActionResult Payment()
         {
-                var userId = new ObjectId(User.Identity.GetUserId());
                 return View(new PaymentViewModel {Types = new List<string> { CurrencyType.USD, CurrencyType.CNY, CurrencyType.EUR, CurrencyType.GBP, CurrencyType.JPY, CurrencyType.PLN, CurrencyType.RUB } });
         }
 
