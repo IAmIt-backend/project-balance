@@ -1,10 +1,8 @@
 ﻿using Converter.XmlElements;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
@@ -23,19 +21,31 @@ namespace Converter
     }
     public static class Converter
     {
+        private static DailyExRates rates;
+        private static DateTime dateTime;
         public static async Task<decimal>  Convert(string currencyFrom, string currencyTo, decimal value)
         {
-            HttpWebRequest http = (HttpWebRequest)WebRequest.Create("http://www.nbrb.by/Services/XmlExRates.aspx");
-            WebResponse response = await http.GetResponseAsync();
-            StreamReader sr = new StreamReader(response.GetResponseStream());
-            string content = sr.ReadToEnd();
-            var serializer = new XmlSerializer(typeof(DailyExRates));
-            var document = XDocument.Parse(content);
-            var reader = document.CreateReader();
-            var obj = serializer.Deserialize(reader);
-            var dailyExRates = (DailyExRates)obj;
-            var list = dailyExRates.Currencies;
-            return (value * list.FirstOrDefault(l => l.CharCode == currencyFrom).Rate) / list.FirstOrDefault(l => l.CharCode == currencyTo).Rate;
+            await RefreshRates();
+            var list = rates.Currencies;
+            var from = list.FirstOrDefault(l => l.CharCode == currencyFrom).Rate/ list.FirstOrDefault(l => l.CharCode == currencyFrom).Scale;
+            var to = list.FirstOrDefault(l => l.CharCode == currencyTo).Rate / list.FirstOrDefault(l => l.CharCode == currencyTo).Scale;
+            return (value * from) / to;
+        }
+        private async static Task RefreshRates()
+        {
+            var curTime = DateTime.Now;
+            if (curTime.Day > dateTime.Day || (curTime.Day <= dateTime.Day &&(curTime.Month > dateTime.Month || curTime.Year> dateTime.Year))) {
+                dateTime = curTime;
+                HttpWebRequest http = (HttpWebRequest)WebRequest.Create("http://www.nbrb.by/Services/XmlExRates.aspx");
+                WebResponse response = await http.GetResponseAsync();
+                StreamReader sr = new StreamReader(response.GetResponseStream());
+                string content = sr.ReadToEnd();
+                var serializer = new XmlSerializer(typeof(DailyExRates));
+                var document = XDocument.Parse(content);
+                var reader = document.CreateReader();
+                var obj = serializer.Deserialize(reader);
+                rates = (DailyExRates)obj;
+            }
         }
     }
 }
