@@ -247,7 +247,7 @@ namespace Balance.Controllers
                     }
                 }
                 var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-                while (minuses.Peek().Value <= -1)
+                while (minuses.Peek().Value <= (decimal) -0.00001)
                 {
                     if (Math.Abs(minuses.Peek().Value) >= pluses.Peek().Value)
                     {
@@ -295,7 +295,7 @@ namespace Balance.Controllers
                         }
                     }
                     var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-                    while (pluses.Peek().Value >= 1)
+                    while (pluses.Peek().Value >= (decimal) 0.00001)
                     {
                         if (pluses.Peek().Value >= Math.Abs(minuses.Peek().Value))
                         {
@@ -388,7 +388,7 @@ namespace Balance.Controllers
                     }
                 }
                 var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-                while (minuses.Peek().Value <= -1)
+                while (minuses.Peek().Value <= (decimal) -0.00001)
                 {
                     if (Math.Abs(minuses.Peek().Value) >= pluses.Peek().Value)
                     {
@@ -436,7 +436,7 @@ namespace Balance.Controllers
                         }
                     }
                     var manager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-                    while (pluses.Peek().Value >= 1)
+                    while (pluses.Peek().Value >= (decimal) 0.00001)
                     {
                         if (pluses.Peek().Value >= Math.Abs(minuses.Peek().Value))
                         {
