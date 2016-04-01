@@ -24,7 +24,28 @@ namespace Balance.Controllers
         {
             return View(new IndexViewModel { Groups = await _godService.GetAllGroupsOfUser(new ObjectId(User.Identity.GetUserId())) });
         }
-
+        [HttpGet]
+        public async Task<ActionResult> Invitations() {
+            var userId = new ObjectId(User.Identity.GetUserId());
+            var viewModel = new InvitationsViewModel { ItemModels = await _godService.GetAllInvitations(userId) };
+            return View(viewModel);
+        }
+        [HttpPost]
+        public async Task<ActionResult> Invitations(ICollection<InvitationListItemModel> models)
+        {
+            if (models != null)
+            {
+                var userId = new ObjectId(User.Identity.GetUserId());
+                foreach (var invitation in models)
+                {
+                    if (invitation.IsVerified && !invitation.IsRejected)
+                        await _godService.VerifyInvitation(userId, invitation.GroupId);
+                    else if (invitation.IsRejected && !invitation.IsVerified)
+                        await _godService.RejectInvitation(userId, invitation.GroupId);
+                }
+            }
+            return RedirectToAction("Index");
+        }
         [HttpGet]
         public ActionResult AddGroup()
         {

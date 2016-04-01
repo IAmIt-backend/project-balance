@@ -24,7 +24,7 @@ namespace ModelAbstractions
 
         Task VerifyInvitation(ObjectId userId, ObjectId groupId);
         Task RejectInvitation(ObjectId userId, ObjectId groupId);
-        Task<ICollection<AddGroupModel>> GetAllInvitations(ObjectId userId);
+        Task<ICollection<InvitationItemModel>> GetAllInvitations(ObjectId userId);
 
         Task<bool> IsGroupActive(ObjectId groupId);
         Task SetGroupState(ObjectId groupId);

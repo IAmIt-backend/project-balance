@@ -36,7 +36,7 @@ namespace ModelAbstractions
                 State = State.Active
             };
             await _groups.AddGroup(group);
-            await _groups.AddUserToGroup(Role.Administrator, userId, id);
+            await _groups.AddUserToGroup(Role.Administrator, id, userId);
             await _groups.AddPayment(id, new Payment {Value = 0, UserId = userId});
 
         }
@@ -45,14 +45,14 @@ namespace ModelAbstractions
 
         public async Task AddUserToGroup(ObjectId userId, ObjectId groupId)
         {
-            if (await _users.IsUserInGroup(userId, groupId) == true)
+            if (await _users.IsUserInGroup(groupId, userId) || await _users.IsUserInvitedInGroup(groupId,userId))
             {
                 throw new Exception("Этот пользователь уже находится в группе");
             }
             else
             {
-                await _groups.AddUserToGroup(Role.Member, userId, groupId);
-                await _groups.AddPayment(groupId, new Payment { Value = 0, UserId = userId });
+                await _groups.AddUserToGroup(Role.Member, groupId, userId);
+                //await _groups.AddPayment(groupId, new Payment { Value = 0, UserId = userId });
             }
 
         }
@@ -105,24 +105,25 @@ namespace ModelAbstractions
 
         public async Task<bool> IsUserAdministrator(ObjectId userId, ObjectId groupId)
         {
-            var role = await _users.IsUserAdministrator(userId, groupId);
+            var role = await _users.IsUserAdministrator(groupId,userId);
             return role;
         }
 
         public async Task VerifyInvitation(ObjectId userId, ObjectId groupId)
         {
-            await _users.VerifyInvitation(userId, groupId);
+            await _users.VerifyInvitation(groupId, userId);
+            await _groups.AddPayment(groupId, new Payment { Value = 0, UserId = userId });
         }
 
         public async Task RejectInvitation(ObjectId userId, ObjectId groupId)
         {
-            await _users.RejectInvitation(userId, groupId);
+            await _users.RejectInvitation(groupId, userId);
         }
 
-        public async Task<ICollection<AddGroupModel>> GetAllInvitations(ObjectId userId)
+        public async Task<ICollection<InvitationItemModel>> GetAllInvitations(ObjectId userId)
         {
            return (await _users.GetAllInvitations(userId))
-                .Select(g => new AddGroupModel {Name = g.Name, Description = g.Description }).ToList();
+                .Select(g => new InvitationItemModel {GroupId = g.Id, GroupName = g.Name}).ToList();
         }
 
         public async Task<bool> IsGroupActive(ObjectId groupId)
