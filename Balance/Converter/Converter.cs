@@ -38,7 +38,7 @@ namespace Converter
             {
                 dateTime = curTime;
                 HttpWebRequest http = (HttpWebRequest)WebRequest.Create("http://www.nbrb.by/Services/XmlExRates.aspx");
-                WebResponse response = await http.GetResponseAsync();
+                WebResponse response = /*await*/ http.GetResponse/*Async*/();
                 StreamReader sr = new StreamReader(response.GetResponseStream());
                 string content = sr.ReadToEnd();
                 var serializer = new XmlSerializer(typeof(DailyExRates));

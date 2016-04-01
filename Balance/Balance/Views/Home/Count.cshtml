@@ -7,15 +7,15 @@
     <h3><label class="label label-default">@Model.Type</label></h3>
 </p>
 <p>
-    <label>Type</label>
+    <h3><label class="label label-default">Type:</label></h3>
 </p>
 <form action="" method="post">
-    <select name="type">
-        @foreach (var type in Model.Types)
-        {
-            <option value=@type>@type</option>
-        }
-    </select>
+        <select name="type" class="btn btn-xs">
+            @foreach (var type in Model.Types)
+            {
+                <option value=@type class="btn btn-block">@type</option>
+            }
+        </select>
     <p>
         <input type="submit" class="btn btn-success" value="OK" />
     </p>

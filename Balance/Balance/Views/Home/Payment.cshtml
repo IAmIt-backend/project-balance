@@ -7,13 +7,13 @@
         <h3>
             <label class="label label-default">Value: </label>
         </h3>
-        <input type="number" name="value" class="form-control" placeholder="Enter value">  &nbsp
-        <select name="type">
+        <input type="number" name="value" class="form-control" placeholder="Enter value">
+        <h5><select name="type" class="btn btn-xs">
             @foreach (var type in Model.Types)
             {
-                <option value=@type>@type</option>
+                <option value=@type class="btn btn-block">@type</option>
             }
-        </select>
+        </select></h5>
     </p>
         @Html.ValidationMessageFor(m => m.Value, "", new {@class = "text-danger"})
         @Html.ValidationSummary(true, "", new {@class = "text-danger"})

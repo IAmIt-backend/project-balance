@@ -112,7 +112,7 @@ namespace ModelAbstractions
         public async Task VerifyInvitation(ObjectId userId, ObjectId groupId)
         {
             await _users.VerifyInvitation(groupId, userId);
-            await _groups.AddPayment(groupId, new Payment { Value = 0, UserId = userId });
+            await _groups.AddPayment(groupId, new Payment { Value = 0, UserId = userId, CurrencyType = CurrencyType.USD });
         }
 
         public async Task RejectInvitation(ObjectId userId, ObjectId groupId)
