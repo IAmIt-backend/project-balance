@@ -42,7 +42,7 @@ namespace Converter
                 StreamReader sr = new StreamReader(response.GetResponseStream());
                 string content = sr.ReadToEnd();
                 var serializer = new XmlSerializer(typeof(DailyExRates));
-                var document = XDocument.Parse(content);
+                var document = XDocument.Parse(content); 
                 var reader = document.CreateReader();
                 var obj = serializer.Deserialize(reader);
                 rates = (DailyExRates)obj;
