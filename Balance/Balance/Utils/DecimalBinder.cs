@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Globalization;
 using System.Web.Mvc;
-using MongoDB.Bson;
 
 namespace Balance.Utils
 {
-    public class ObjectIdBinder : IModelBinder
+    public class DecimalBinder : IModelBinder
     {
         public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
         {
@@ -14,7 +14,7 @@ namespace Balance.Utils
             object actualValue = null;
             try
             {
-                actualValue = ObjectId.Parse(valueResult.AttemptedValue);
+                actualValue = Convert.ToDecimal(valueResult.AttemptedValue, CultureInfo.CurrentCulture);
             }
             catch (FormatException e)
             {
