@@ -36,7 +36,6 @@ namespace Converter
             var curTime = DateTime.Now;
             if (curTime.Date > dateTime.Date)
             {
-                dateTime = curTime;
                 HttpWebRequest http = (HttpWebRequest)WebRequest.Create("http://www.nbrb.by/Services/XmlExRates.aspx");
                 WebResponse response = /*await*/ http.GetResponse/*Async*/();
                 StreamReader sr = new StreamReader(response.GetResponseStream());
@@ -46,6 +45,7 @@ namespace Converter
                 var reader = document.CreateReader();
                 var obj = serializer.Deserialize(reader);
                 rates = (DailyExRates)obj;
+                dateTime = curTime;
             }
         }
     }
