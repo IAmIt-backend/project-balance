@@ -19,7 +19,19 @@ namespace Balance.Controllers
     [Authorize]
     public class HomeController : Controller
     {
-        private ModelAbstractions.IService _godService = new ModelAbstractions.Service();
+        private List<string> _types =
+
+            new List<string>
+            {
+                CurrencyType.USD,
+                CurrencyType.CNY,
+                CurrencyType.EUR,
+                CurrencyType.GBP,
+                CurrencyType.JPY,
+                CurrencyType.PLN,
+                CurrencyType.RUB
+            };
+    private ModelAbstractions.IService _godService = new ModelAbstractions.Service();
         [HttpGet]
         public async Task<ActionResult> Index()
         {
@@ -95,7 +107,7 @@ namespace Balance.Controllers
                     new PaymentListItemModel
                     {
                         Id = l.Id,
-                        Value = l.Value,
+                        Value = Math.Round(l.Value, 2),
                         UserName = users.First(u => u.Id == l.Id).Name,
                         Type = l.Type
                     });
@@ -114,7 +126,7 @@ namespace Balance.Controllers
         [HttpGet]
         public ActionResult Payment()
         {
-                return View(new PaymentViewModel {Types = new List<string> { CurrencyType.USD, CurrencyType.CNY, CurrencyType.EUR, CurrencyType.GBP, CurrencyType.JPY, CurrencyType.PLN, CurrencyType.RUB } });
+                return View(new PaymentViewModel {Types = _types });
         }
 
         [HttpPost]
@@ -122,17 +134,17 @@ namespace Balance.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(new PaymentViewModel { Value = model.Value });
+                return View(new PaymentViewModel { Value = model.Value, Types = _types });
             }
             if (model.Value < 0)
             {
                 ModelState.AddModelError("", "Invalid value");
-                return View(new PaymentViewModel { Value = model.Value });
+                return View(new PaymentViewModel { Value = model.Value, Types = _types });
             }
             if (!await _godService.IsGroupActive(id))
             {
                 ModelState.AddModelError("", "This group is passive. You can not add payment");
-                return View(new PaymentViewModel { Value = model.Value });
+                return View(new PaymentViewModel { Value = model.Value, Types = _types });
             }
 
             else
@@ -252,7 +264,7 @@ namespace Balance.Controllers
                     {
                         viewModel.Credits.Add(new CreditModel
                         {
-                            Credit = pluses.Peek().Value,
+                            Credit = Math.Round(pluses.Peek().Value, 2),
                             Name = manager.FindById(pluses.Peek().Id.ToString()).UserName
                         });
                         minuses.Peek().Value += pluses.Peek().Value;
@@ -262,7 +274,7 @@ namespace Balance.Controllers
                     {
                         viewModel.Credits.Add(new CreditModel
                         {
-                            Credit = Math.Abs(minuses.Peek().Value),
+                            Credit = Math.Round(Math.Abs(minuses.Peek().Value), 2),
                             Name = manager.FindById(pluses.Peek().Id.ToString()).UserName
                         });
                         minuses.Peek().Value += pluses.Peek().Value;
@@ -300,7 +312,7 @@ namespace Balance.Controllers
                         {
                             viewModel.Credits.Add(new CreditModel
                             {
-                                Credit = Math.Abs(minuses.Peek().Value),
+                                Credit = Math.Round(Math.Abs(minuses.Peek().Value), 2),
                                 Name = manager.FindById(minuses.Peek().Id.ToString()).UserName
                             });
                             pluses.Peek().Value += minuses.Peek().Value;
@@ -310,7 +322,7 @@ namespace Balance.Controllers
                         {
                             viewModel.Credits.Add(new CreditModel
                             {
-                                Credit = pluses.Peek().Value,
+                                Credit = Math.Round(pluses.Peek().Value, 2),
                                 Name = manager.FindById(minuses.Peek().Id.ToString()).UserName
                             });
                             pluses.Peek().Value += minuses.Peek().Value;
