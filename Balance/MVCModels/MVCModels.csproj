@@ -61,6 +61,8 @@
     <Compile Include="Models\GroupListItemModel.cs" />
     <Compile Include="Models\GroupModel.cs" />
     <Compile Include="Models\IndexModel.cs" />
+    <Compile Include="Models\InvitationItemModel.cs" />
+    <Compile Include="Models\InvitationListItemModel.cs" />
     <Compile Include="Models\PaymentListItemModel.cs" />
     <Compile Include="Models\PaymentModel.cs" />
     <Compile Include="Models\UserListItemModel.cs" />

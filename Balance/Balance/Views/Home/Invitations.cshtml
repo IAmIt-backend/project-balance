@@ -1,0 +1,19 @@
+﻿@model Balance.ViewModels.InvitationsViewModel
+@{
+    ViewBag.Title = "Invitations";
+}
+
+<h2>Invitations</h2>
+
+<table class="table table-bordered">
+    <tr><th>Group name</th><th>Agree</th><th>Reject</th></tr>
+    @{ var count = 0;}
+    @foreach (var item in Model.ItemModels)
+    {
+
+        <tr id="@count"><td>@item.GroupName</td><td><form action="" method="post"><input type="text" name="GroupId" value=@item.GroupId hidden /><input type="checkbox" name="IsVerified" value="true" checked hidden /><input type="checkbox" name="IsRejected" value="true" unchecked hidden /><input type="submit" value="Agree" /></form></td><td><form action="" method="post"><input type="text" name="GroupId" value=@item.GroupId hidden /><input type="checkbox" name="IsVerified" value="true" unchecked hidden /><input type="checkbox" name="IsRejected" value="true" checked hidden /><input type="submit" value="Reject" /></form></td></tr>
+
+        count++;
+    }
+
+</table>

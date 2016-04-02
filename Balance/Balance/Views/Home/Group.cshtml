@@ -9,43 +9,44 @@
     <h3><label class="label label-default">Name:</label> &nbsp<label class="label label-info">@Model.Name</label></h3>
 </p>
 <p>
-    <h3><label class="label label-default">Description:</label> &nbsp<label class="label label-info">@Model.Description</label></h3>
+    <h3><label class="label label-default">Description:</label> &nbsp<label class="label label-info">@Model.Description</label>
+    </h3>
 </p>
-<br />
-<p>
-    <h4><label class="label label-warning">@Html.ActionLink("Add Payment", "Payment", new { Id = @Model.Id.ToString() })</label></h4>
-</p>
+<br/>
+    <br />
+    <p>
+        <h4><label class="label label-warning">@Html.ActionLink("Add Payment", "Payment", new { Id = @Model.Id.ToString() })</label></h4>
+    </p>
 
-<p>
-    <h4><label class="label label-warning">@Html.ActionLink("Add User To Group", "AddUserToGroup", new {Id = Model.Id.ToString()})</label></h4>
-</p>
+    <p>
+        <h4><label class="label label-warning">@Html.ActionLink("Add User To Group", "AddUserToGroup", new { Id = Model.Id.ToString() })</label></h4>
+    </p>
 
-<p>
-    <h4><label class="label label-warning">@Html.ActionLink("Count", "Count", new { Id = Model.Id.ToString() })</label></h4>
-</p>
+    <p>
+        <h4><label class="label label-warning">@Html.ActionLink("Count", "Count", new { Id = Model.Id.ToString() })</label></h4>
+    </p>
 
-<br />
-<p>
-    <h3><label class="label label-primary">Payments</label></h3>
-</p>
-<table class="table table-bordered">
-    <tr><th>User name</th><th>Payment value</th></tr>
-    <tr><td><b>Total</b></td> <td>@Model.Sum</td></tr>
-    @foreach (var payment in Model.Payments)
-    {
-        if (payment.Value != 0)
+    <br />
+    <p>
+        <h3><label class="label label-primary">Payments</label></h3>
+    </p>
+    <table class="table table-bordered">
+        <tr><th>User name</th><th>Payment value</th><th>Type</th></tr>
+        @foreach (var payment in Model.Payments)
         {
-            <tr><td>@payment.UserName</td><td>@payment.Value</td></tr>
+            if (payment.Value != 0)
+            {
+                <tr><td>@payment.UserName</td><td>@payment.Value</td><td>@payment.Type</td></tr>
+            }
         }
-    }
-</table>
-<p>
-    <h3><label class="label label-primary">Users</label></h3>
-</p>
-<table class="table table-bordered">
-    <tr><th>User name</th></tr>
-    @foreach (var user in Model.Users)
-    {
-        <tr><td>@user.Name</td></tr>
-    }
-</table>
+    </table>
+    <p>
+        <h3><label class="label label-primary">Users</label></h3>
+    </p>
+    <table class="table table-bordered">
+        <tr><th>User name</th></tr>
+        @foreach (var user in Model.Users)
+        {
+            <tr><td>@user.Name</td></tr>
+        }
+    </table>

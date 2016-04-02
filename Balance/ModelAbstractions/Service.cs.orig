@@ -36,8 +36,13 @@ namespace ModelAbstractions
                 State = State.Active
             };
             await _groups.AddGroup(group);
+<<<<<<< HEAD
             await _groups.AddUserToGroup(Role.Administrator, id, userId);
+            await _groups.AddPayment(id, new Payment {Value = 0, UserId = userId});
+=======
+            await _groups.AddUserToGroup(Role.Administrator, userId, id);
             await _groups.AddPayment(id, new Payment {Value = 0, UserId = userId, CurrencyType = CurrencyType.USD});
+>>>>>>> Fix
 
         }
 
@@ -51,8 +56,13 @@ namespace ModelAbstractions
             }
             else
             {
+<<<<<<< HEAD
                 await _groups.AddUserToGroup(Role.Member, groupId, userId);
                 //await _groups.AddPayment(groupId, new Payment { Value = 0, UserId = userId });
+=======
+                await _groups.AddUserToGroup(Role.Member, userId, groupId);
+                await _groups.AddPayment(groupId, new Payment { Value = 0, UserId = userId, CurrencyType = CurrencyType.USD });
+>>>>>>> Fix
             }
 
         }
@@ -112,7 +122,7 @@ namespace ModelAbstractions
         public async Task VerifyInvitation(ObjectId userId, ObjectId groupId)
         {
             await _users.VerifyInvitation(groupId, userId);
-            await _groups.AddPayment(groupId, new Payment { Value = 0, UserId = userId, CurrencyType = CurrencyType.USD });
+            await _groups.AddPayment(groupId, new Payment { Value = 0, UserId = userId });
         }
 
         public async Task RejectInvitation(ObjectId userId, ObjectId groupId)

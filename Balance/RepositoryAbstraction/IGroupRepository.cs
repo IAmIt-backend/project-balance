@@ -11,7 +11,7 @@ namespace RepositoryAbstraction
     public interface IGroupRepository
     {
         Task AddGroup(Group group);
-        Task AddUserToGroup(Role memberType, ObjectId userId, ObjectId groupId);
+        Task AddUserToGroup(Role memberType, ObjectId groupId, ObjectId userId);
         Task AddPayment(ObjectId groupId, Payment payment);
         Task<ICollection<ObjectId>> GetAllUsersInGroup(ObjectId groupId);
         Task<Group> GetGroup(ObjectId id);

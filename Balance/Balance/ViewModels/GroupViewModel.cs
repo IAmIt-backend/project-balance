@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Converter;
 using MongoDB.Bson;
 using MVCModels.Models;
 
@@ -13,7 +14,6 @@ namespace Balance.ViewModels
         public string Name { get; set; }
         public string Description { get; set; }
         public List<PaymentListItemModel> Payments { get; set; }
-        public decimal Sum { get; set; }
         public List<UserListItemModel> Users { get; set; }
     }
 }

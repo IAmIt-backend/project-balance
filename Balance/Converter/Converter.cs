@@ -9,7 +9,7 @@ using System.Xml.Serialization;
 
 namespace Converter
 {
-    public static class CurrencyType
+    public class CurrencyType
     {
         public readonly static string USD = "USD";
         public readonly static string EUR = "EUR";
@@ -36,16 +36,16 @@ namespace Converter
             var curTime = DateTime.Now;
             if (curTime.Date > dateTime.Date)
             {
-                dateTime = curTime;
                 HttpWebRequest http = (HttpWebRequest)WebRequest.Create("http://www.nbrb.by/Services/XmlExRates.aspx");
-                WebResponse response = await http.GetResponseAsync();
+                WebResponse response = /*await*/ http.GetResponse/*Async*/();
                 StreamReader sr = new StreamReader(response.GetResponseStream());
                 string content = sr.ReadToEnd();
                 var serializer = new XmlSerializer(typeof(DailyExRates));
-                var document = XDocument.Parse(content);
+                var document = XDocument.Parse(content); 
                 var reader = document.CreateReader();
                 var obj = serializer.Deserialize(reader);
                 rates = (DailyExRates)obj;
+                dateTime = curTime;
             }
         }
     }

@@ -8,5 +8,6 @@ namespace MVCModels.Models
 {
     public class CountModel
     {
+        public string Type { get; set; }
     }
 }

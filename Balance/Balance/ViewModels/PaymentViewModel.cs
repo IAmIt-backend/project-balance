@@ -8,6 +8,7 @@ namespace Balance.ViewModels
 {
     public class PaymentViewModel
     {
+        public List<string> Types { get; set; }
         public decimal Value { get; set; }
     }
 }

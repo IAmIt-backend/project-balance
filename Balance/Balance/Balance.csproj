@@ -188,6 +188,7 @@
     <Compile Include="ViewModels\CountViewModel.cs" />
     <Compile Include="ViewModels\GroupViewModel.cs" />
     <Compile Include="ViewModels\IndexViewModel.cs" />
+    <Compile Include="ViewModels\InvitationsViewModel.cs" />
     <Compile Include="ViewModels\PaymentViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -232,6 +233,7 @@
     <Content Include="Views\Home\Payment.cshtml" />
     <Content Include="Views\Home\AddUserToGroup.cshtml" />
     <Content Include="Views\Home\Count.cshtml" />
+    <Content Include="Views\Home\Invitations.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -245,6 +247,10 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Converter\Converter.csproj">
+      <Project>{9aedb7e8-d2cd-4779-9dc8-6c9a549dcf41}</Project>
+      <Name>Converter</Name>
+    </ProjectReference>
     <ProjectReference Include="..\ModelAbstractions\ModelAbstractions.csproj">
       <Project>{8158cb35-ea38-4e55-ba8a-56867c063cf6}</Project>
       <Name>ModelAbstractions</Name>
